@@ -17,7 +17,6 @@ import Auth from "./pages/Auth";
 import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
 import WhatsAppButton from "@/components/WhatsAppButton";
-import AgeGate from "@/components/AgeGate";
 
 const queryClient = new QueryClient();
 
@@ -30,26 +29,19 @@ const App = () => (
             <Toaster />
             <Sonner />
             <BrowserRouter>
+              <Navbar />
               <Routes>
-                <Route path="/" element={<AgeGate />} />
-                <Route path="/*" element={
-                  <>
-                    <Navbar />
-                    <Routes>
-                      <Route path="/" element={<Index />} />
-                      <Route path="/shop" element={<Shop />} />
-                      <Route path="/about" element={<About />} />
-                      <Route path="/contact" element={<Contact />} />
-                      <Route path="/cart" element={<Cart />} />
-                      <Route path="/auth" element={<Auth />} />
-                      <Route path="/admin" element={<Admin />} />
-                      <Route path="*" element={<NotFound />} />
-                    </Routes>
-                    <Footer />
-                    <WhatsAppButton />
-                  </>
-                } />
+                <Route path="/" element={<Index />} />
+                <Route path="/shop" element={<Shop />} />
+                <Route path="/about" element={<About />} />
+                <Route path="/contact" element={<Contact />} />
+                <Route path="/cart" element={<Cart />} />
+                <Route path="/auth" element={<Auth />} />
+                <Route path="/admin" element={<Admin />} />
+                <Route path="*" element={<NotFound />} />
               </Routes>
+              <Footer />
+              <WhatsAppButton />
             </BrowserRouter>
           </CartProvider>
         </RegionProvider>
