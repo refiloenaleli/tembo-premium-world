@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="400" viewBox="0 0 800 400">
+  <rect width="800" height="400" fill="#0a0d0a"/>
+  <text x="400" y="200" font-family="Georgia" font-size="20" fill="#c9a84c" text-anchor="middle" dominant-baseline="middle">Location Map</text>
+  <text x="400" y="235" font-family="Arial" font-size="13" fill="#888" text-anchor="middle" dominant-baseline="middle">Replace: images/misc/map-placeholder.jpg</text>
+</svg>

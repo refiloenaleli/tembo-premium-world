@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="600" viewBox="0 0 1600 600">
+  <rect width="1600" height="600" fill="#0d0804"/>
+  <text x="800" y="300" font-family="Georgia" font-size="20" fill="#c9a84c" text-anchor="middle" dominant-baseline="middle">Newsletter Background</text>
+  <text x="800" y="335" font-family="Arial" font-size="13" fill="#888" text-anchor="middle" dominant-baseline="middle">Replace: images/misc/newsletter-bg.jpg</text>
+</svg>

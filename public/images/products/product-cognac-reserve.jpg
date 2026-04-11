@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="600" viewBox="0 0 600 600">
+  <rect width="600" height="600" fill="#1a1205"/>
+  <rect x="240" y="80" width="120" height="300" rx="10" fill="none" stroke="#c9a84c" stroke-width="3" opacity="0.6"/>
+  <rect x="260" y="60" width="80" height="30" rx="5" fill="none" stroke="#c9a84c" stroke-width="2" opacity="0.5"/>
+  <rect x="230" y="250" width="140" height="100" rx="4" fill="#c9a84c" opacity="0.15"/>
+  <text x="300" y="308" font-family="Georgia" font-size="14" fill="#c9a84c" text-anchor="middle" opacity="0.8">TEMBO</text>
+  <text x="300" y="430" font-family="Georgia" font-size="20" fill="#c9a84c" text-anchor="middle">Cognac Reserve</text>
+  <text x="300" y="470" font-family="Arial" font-size="13" fill="#888" text-anchor="middle">Replace: images/products/product-cognac-reserve.jpg</text>
+</svg>
