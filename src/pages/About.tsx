@@ -60,7 +60,7 @@ const About = () => (
             </li>
             <li className="flex items-start gap-3">
               <span className="text-primary mt-1">•</span> 
-              Mshale Caramel Brandy — Deep, toasted, and exquisite
+              Mshale Caramel Vodka — Deep, toasted, and exquisite
             </li>
             <li className="flex items-start gap-3">
               <span className="text-primary mt-1">•</span> 
