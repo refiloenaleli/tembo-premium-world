@@ -22,12 +22,12 @@ const Navbar = () => {
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-background/90 backdrop-blur-md border-b border-border">
-      <div className="container mx-auto px-4 flex items-center justify-between h-16">
-        <Link to="/" className="flex items-center gap-3 flex-shrink-0">
-          <img src="/images/misc/tembo-logo.jpg" alt="Tembo Premium" className="h-12 w-12 rounded-full border border-primary/30 object-cover shadow-gold" />
-          <div className="leading-tight">
-            <p className="font-display text-lg font-bold tracking-[0.14em] text-foreground sm:text-xl">Tembo Premium</p>
-            <p className="text-[10px] uppercase tracking-[0.28em] text-primary sm:text-xs">We are mwasi.</p>
+      <div className="container mx-auto flex h-16 items-center justify-between gap-3 px-3 sm:px-4">
+        <Link to="/" className="flex min-w-0 items-center gap-2 sm:gap-3">
+          <img src="/images/misc/tembo-logo.jpg" alt="Tembo Premium" className="h-10 w-10 rounded-full border border-primary/30 object-cover shadow-gold sm:h-12 sm:w-12" />
+          <div className="min-w-0 leading-tight">
+            <p className="truncate font-display text-sm font-bold tracking-[0.08em] text-foreground sm:text-xl sm:tracking-[0.14em]">Tembo Premium</p>
+            <p className="hidden text-[10px] uppercase tracking-[0.28em] text-primary sm:block sm:text-xs">We are mwasi.</p>
           </div>
         </Link>
 
@@ -46,7 +46,7 @@ const Navbar = () => {
           ))}
         </ul>
 
-        <div className="flex items-center gap-0.5 sm:gap-1 flex-shrink-0">
+        <div className="hidden items-center gap-1 md:flex">
           <ThemeToggle />
           <RegionSelector />
           {isAdmin && (
@@ -71,7 +71,18 @@ const Navbar = () => {
               </span>
             )}
           </Link>
-          <button className="md:hidden p-2 text-muted-foreground" onClick={() => setIsOpen(!isOpen)}>
+        </div>
+
+        <div className="flex items-center gap-1 md:hidden">
+          <Link to="/cart" className="p-2 text-muted-foreground hover:text-primary transition-colors relative">
+            <ShoppingBag size={20} />
+            {totalItems > 0 && (
+              <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold">
+                {totalItems}
+              </span>
+            )}
+          </Link>
+          <button className="p-2 text-muted-foreground" onClick={() => setIsOpen(!isOpen)} aria-label="Toggle menu">
             {isOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
         </div>
@@ -79,12 +90,42 @@ const Navbar = () => {
 
       {isOpen && (
         <div className="md:hidden bg-card border-t border-border">
+          <div className="space-y-4 px-4 py-4">
+            <div className="flex items-center justify-between gap-3">
+              <div className="min-w-0">
+                <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Display</p>
+                <p className="text-sm text-foreground">Theme and currency</p>
+              </div>
+              <ThemeToggle />
+            </div>
+            <RegionSelector triggerClassName="w-full max-w-none justify-between h-10 px-3 text-xs" />
+          </div>
+
           {links.map((link) => (
             <Link key={link.to} to={link.to} onClick={() => setIsOpen(false)}
               className="block px-6 py-3 text-sm uppercase tracking-wide text-muted-foreground hover:text-primary hover:bg-secondary transition-colors">
               {link.label}
             </Link>
           ))}
+          {user ? (
+            <button
+              onClick={() => {
+                signOut();
+                setIsOpen(false);
+              }}
+              className="block w-full px-6 py-3 text-left text-sm uppercase tracking-wide text-muted-foreground hover:text-primary hover:bg-secondary transition-colors"
+            >
+              Sign Out
+            </button>
+          ) : (
+            <Link
+              to="/auth"
+              onClick={() => setIsOpen(false)}
+              className="block px-6 py-3 text-sm uppercase tracking-wide text-muted-foreground hover:text-primary hover:bg-secondary transition-colors"
+            >
+              Sign In
+            </Link>
+          )}
           {isAdmin && (
             <Link to="/admin" onClick={() => setIsOpen(false)} className="block px-6 py-3 text-sm uppercase tracking-wide text-primary hover:bg-secondary transition-colors">
               Admin Dashboard

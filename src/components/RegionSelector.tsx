@@ -9,7 +9,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-const RegionSelector = () => {
+interface RegionSelectorProps {
+  triggerClassName?: string;
+}
+
+const RegionSelector = ({ triggerClassName = "" }: RegionSelectorProps) => {
   const { region, setRegion } = useRegion();
 
   return (
@@ -17,7 +21,7 @@ const RegionSelector = () => {
       const r = regions.find((r) => r.id === val);
       if (r) setRegion(r);
     }}>
-      <SelectTrigger className="w-auto gap-1 sm:gap-2 border-border bg-secondary text-foreground text-[10px] sm:text-xs h-7 sm:h-8 px-1.5 sm:px-2 max-w-[120px] sm:max-w-none">
+      <SelectTrigger className={`w-auto gap-1 sm:gap-2 border-border bg-secondary text-foreground text-[10px] sm:text-xs h-7 sm:h-8 px-1.5 sm:px-2 max-w-[120px] sm:max-w-none ${triggerClassName}`}>
         <Globe size={14} className="text-primary" />
         <SelectValue />
       </SelectTrigger>
