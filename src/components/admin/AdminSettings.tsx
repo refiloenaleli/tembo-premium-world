@@ -10,6 +10,9 @@ const AdminSettings = () => {
   const queryClient = useQueryClient();
   const [whatsapp, setWhatsapp] = useState("");
   const [email, setEmail] = useState("");
+  const [address, setAddress] = useState("");
+  const [shopifyDomain, setShopifyDomain] = useState("");
+  const [shopifyVariantMap, setShopifyVariantMap] = useState("{}");
   const [newAdminEmail, setNewAdminEmail] = useState("");
   const [adding, setAdding] = useState(false);
 
@@ -17,6 +20,9 @@ const AdminSettings = () => {
     if (settings) {
       setWhatsapp(settings.whatsapp_number || "");
       setEmail(settings.contact_email || "");
+      setAddress(settings.club_house_address || "");
+      setShopifyDomain(settings.shopify_store_domain || "");
+      setShopifyVariantMap(settings.shopify_variant_map || "{}");
     }
   }, [settings]);
 
@@ -64,6 +70,48 @@ const AdminSettings = () => {
           <div className="flex gap-2">
             <input className="flex-1 bg-secondary border border-border text-foreground rounded px-3 py-2 text-sm" value={email} onChange={e => setEmail(e.target.value)} />
             <button onClick={() => saveSetting("contact_email", email)} className="bg-primary text-primary-foreground px-4 py-2 rounded text-sm font-semibold">Save</button>
+          </div>
+        </div>
+        <div>
+          <label className="text-xs text-muted-foreground">Tembo Club House Address</label>
+          <div className="flex gap-2">
+            <input className="flex-1 bg-secondary border border-border text-foreground rounded px-3 py-2 text-sm" value={address} onChange={e => setAddress(e.target.value)} />
+            <button onClick={() => saveSetting("club_house_address", address)} className="bg-primary text-primary-foreground px-4 py-2 rounded text-sm font-semibold">Save</button>
+          </div>
+        </div>
+        <div>
+          <label className="text-xs text-muted-foreground">Shopify Store Domain</label>
+          <div className="flex gap-2">
+            <input className="flex-1 bg-secondary border border-border text-foreground rounded px-3 py-2 text-sm" placeholder="your-store.myshopify.com" value={shopifyDomain} onChange={e => setShopifyDomain(e.target.value)} />
+            <button onClick={() => saveSetting("shopify_store_domain", shopifyDomain)} className="bg-primary text-primary-foreground px-4 py-2 rounded text-sm font-semibold">Save</button>
+          </div>
+        </div>
+        <div>
+          <label className="text-xs text-muted-foreground">Shopify Variant Map JSON</label>
+          <textarea
+            className="w-full bg-secondary border border-border text-foreground rounded px-3 py-2 text-sm min-h-40"
+            value={shopifyVariantMap}
+            onChange={e => setShopifyVariantMap(e.target.value)}
+            placeholder={`{\n  "watermelon-gin": { "full": "1234567890", "mini": "1234567891" },\n  "tropical-gin": { "full": "1234567892", "mini": "1234567893" }\n}`}
+          />
+          <div className="mt-2 flex items-start justify-between gap-3">
+            <p className="text-xs text-muted-foreground">
+              Use Shopify variant IDs, keyed by Tembo product slug and bottle size. This powers the secure Shopify checkout redirect.
+            </p>
+            <button
+              onClick={() => {
+                try {
+                  JSON.parse(shopifyVariantMap || "{}");
+                } catch {
+                  toast.error("Shopify variant map must be valid JSON");
+                  return;
+                }
+                saveSetting("shopify_variant_map", shopifyVariantMap);
+              }}
+              className="bg-primary text-primary-foreground px-4 py-2 rounded text-sm font-semibold"
+            >
+              Save
+            </button>
           </div>
         </div>
       </div>

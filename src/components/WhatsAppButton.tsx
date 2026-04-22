@@ -3,7 +3,7 @@ import { useSiteSettings } from "@/hooks/useSiteSettings";
 
 const WhatsAppButton = () => {
   const { data: settings } = useSiteSettings();
-  const number = settings?.whatsapp_number?.replace(/[^0-9]/g, "") || "26659385613";
+  const number = settings?.whatsapp_number?.replace(/[^0-9]/g, "") || "27733159993";
 
   return (
     <a

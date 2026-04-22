@@ -20,7 +20,7 @@ const AdminOrders = () => {
     },
   });
 
-  const adminWaNumber = (settings?.whatsapp_number || "+26659385613").replace(/[^0-9]/g, "");
+  const adminWaNumber = (settings?.whatsapp_number || "+27 73 315 9993").replace(/[^0-9]/g, "");
 
   const updateStatus = async (id: string, status: string) => {
     const { error } = await supabase.from("orders").update({ status }).eq("id", id);

@@ -6,16 +6,60 @@ import { Minus, Plus, Trash2, CreditCard, Banknote } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { useSiteSettings } from "@/hooks/useSiteSettings";
+import { buildShopifyCheckoutUrl, getShopifySetupStatus } from "@/lib/shopify";
 
-type PaymentMethod = "manual" | "stripe";
+type PaymentMethod = "manual" | "shopify";
 
 const Cart = () => {
   const { items, updateQuantity, removeItem, clearCart, totalPrice } = useCart();
   const { formatPrice, region } = useRegion();
   const { user } = useAuth();
+  const { data: settings } = useSiteSettings();
   const navigate = useNavigate();
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("manual");
   const [isProcessing, setIsProcessing] = useState(false);
+  const shopifySetup = getShopifySetupStatus(settings || {});
+
+  const orderItemSummary = items
+    .map((item) => `${item.quantity} x ${item.product.name} (${item.size === "full" ? "750ml" : "50ml"})`)
+    .join(", ");
+
+  const createOrderRecord = async (notes: string, status = "pending") => {
+    const { data: order, error } = await supabase
+      .from("orders")
+      .insert({
+        user_id: user?.id,
+        customer_name: user?.user_metadata?.full_name || user?.email || "",
+        customer_email: user?.email || "",
+        region_id: region.id,
+        currency: region.currency,
+        total_amount: totalPrice,
+        status,
+        notes,
+      })
+      .select()
+      .single();
+
+    if (error || !order) {
+      throw new Error("Failed to create order. Please try again.");
+    }
+
+    const orderItems = items.map((item) => ({
+      order_id: order.id,
+      product_id: item.product.id,
+      size: item.size,
+      quantity: item.quantity,
+      unit_price: item.size === "full" ? item.product.price_full : item.product.price_mini,
+    }));
+
+    const { error: itemsError } = await supabase.from("order_items").insert(orderItems);
+    if (itemsError) {
+      throw new Error("Failed to save order items.");
+    }
+
+    return order;
+  };
 
   const handleCheckout = async () => {
     if (!user) {
@@ -27,52 +71,40 @@ const Cart = () => {
     setIsProcessing(true);
 
     try {
-      const { data: order, error } = await supabase
-        .from("orders")
-        .insert({
-          user_id: user.id,
-          customer_name: user.user_metadata?.full_name || user.email || "",
-          customer_email: user.email || "",
-          region_id: region.id,
-          currency: region.currency,
-          total_amount: totalPrice,
-          status: "pending",
-          notes: paymentMethod === "manual" ? "Manual payment (Cash/EFT)" : "Stripe payment",
-        })
-        .select()
-        .single();
+      if (paymentMethod === "shopify") {
+        const checkout = buildShopifyCheckoutUrl(settings || {}, items, user.email);
 
-      if (error || !order) {
-        toast.error("Failed to create order. Please try again.");
+        if (!checkout.ok) {
+          toast.error(
+            checkout.missingProducts.length > 0
+              ? `Shopify is missing variant IDs for: ${checkout.missingProducts.join(", ")}`
+              : "Shopify checkout is not configured yet.",
+          );
+          return;
+        }
+
+        try {
+          await createOrderRecord(
+            `Shopify checkout started. ${orderItemSummary}`,
+            "awaiting_shopify_payment",
+          );
+        } catch (error) {
+          console.error("Failed to save Shopify checkout attempt", error);
+        }
+
+        window.location.assign(checkout.url);
         return;
       }
 
-      const orderItems = items.map((item) => ({
-        order_id: order.id,
-        product_id: item.product.id,
-        size: item.size,
-        quantity: item.quantity,
-        unit_price: item.size === "full" ? item.product.price_full : item.product.price_mini,
-      }));
-
-      const { error: itemsError } = await supabase.from("order_items").insert(orderItems);
-      if (itemsError) {
-        toast.error("Failed to save order items.");
-        return;
-      }
-
-      if (paymentMethod === "stripe") {
-        // Stripe integration placeholder – for now treat as pending
-        toast.info("Online payments coming soon. Your order has been saved and we'll contact you.");
-      } else {
-        toast.success(
-          "Order placed! We'll contact you with EFT/cash payment details and arrange delivery to " +
-            region.name +
-            "."
-        );
-      }
-
+      await createOrderRecord(`Manual payment (Cash/EFT). ${orderItemSummary}`);
+      toast.success(
+        "Order placed! We'll contact you with EFT/cash payment details and arrange delivery to " +
+          region.name +
+          ".",
+      );
       clearCart();
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Checkout failed. Please try again.");
     } finally {
       setIsProcessing(false);
     }
@@ -128,7 +160,6 @@ const Cart = () => {
           <div className="bg-card border border-border rounded-lg p-6 h-fit space-y-4">
             <h3 className="font-display text-lg text-foreground">Order Summary</h3>
 
-            {/* Payment Method Selector */}
             <div className="space-y-2">
               <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Payment Method</p>
               <button
@@ -146,17 +177,21 @@ const Cart = () => {
                 </div>
               </button>
               <button
-                onClick={() => setPaymentMethod("stripe")}
+                onClick={() => setPaymentMethod("shopify")}
                 className={`w-full flex items-center gap-3 p-3 rounded-lg border text-left text-sm transition-colors ${
-                  paymentMethod === "stripe"
+                  paymentMethod === "shopify"
                     ? "border-primary bg-primary/10 text-foreground"
                     : "border-border bg-secondary text-muted-foreground hover:text-foreground"
                 }`}
               >
-                <CreditCard size={18} className={paymentMethod === "stripe" ? "text-primary" : ""} />
+                <CreditCard size={18} className={paymentMethod === "shopify" ? "text-primary" : ""} />
                 <div>
-                  <p className="font-semibold">Pay Online (Card)</p>
-                  <p className="text-xs text-muted-foreground">Coming soon – secure card payments</p>
+                  <p className="font-semibold">Shopify Secure Checkout</p>
+                  <p className="text-xs text-muted-foreground">
+                    {shopifySetup.isConfigured
+                      ? "Redirects to Shopify hosted checkout with Shop Pay support"
+                      : "Set your Shopify store domain and variant IDs in Admin Settings"}
+                  </p>
                 </div>
               </button>
             </div>
@@ -179,10 +214,16 @@ const Cart = () => {
             <p className="text-xs text-muted-foreground">Est. {region.deliveryDays}</p>
             <button
               onClick={handleCheckout}
-              disabled={isProcessing}
+              disabled={isProcessing || (paymentMethod === "shopify" && !shopifySetup.isConfigured)}
               className="w-full bg-primary text-primary-foreground py-3 rounded font-semibold uppercase text-sm tracking-wider hover:bg-primary/90 transition-colors disabled:opacity-50"
             >
-              {!user ? "Sign In to Order" : isProcessing ? "Processing..." : "Place Order"}
+              {!user
+                ? "Sign In to Order"
+                : isProcessing
+                  ? "Processing..."
+                  : paymentMethod === "shopify"
+                    ? "Continue to Shopify"
+                    : "Place Order"}
             </button>
             <button onClick={clearCart} className="w-full text-muted-foreground text-xs hover:text-foreground transition-colors">
               Clear Cart

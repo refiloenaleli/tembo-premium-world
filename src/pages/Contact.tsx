@@ -3,6 +3,7 @@ import { useRegion } from "@/context/RegionContext";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { toast } from "sonner";
 import { Mail, MapPin, Phone, MessageCircle } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 const Contact = () => {
   const { region } = useRegion();
@@ -10,21 +11,36 @@ const Contact = () => {
   const [form, setForm] = useState({ name: "", email: "", phone: "", message: "" });
   const [loading, setLoading] = useState(false);
 
-  const contactEmail = settings?.contact_email || "tembopremium56@gmail.com";
-  const whatsappNumber = settings?.whatsapp_number || "+266 59385613";
+  const contactEmail = settings?.contact_email || "nqobin31@gmail.com";
+  const whatsappNumber = settings?.whatsapp_number || "+27 73 315 9993";
+  const clubHouseAddress = settings?.club_house_address || "94a Sandton Drive, Parkmore, Sandton, Johannesburg";
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.name.trim() || !form.email.trim() || !form.message.trim()) {
       toast.error("Please fill in all required fields.");
       return;
     }
+
     setLoading(true);
-    setTimeout(() => {
-      toast.success("Thank you! We'll be in touch soon.");
-      setForm({ name: "", email: "", phone: "", message: "" });
+
+    const { error } = await supabase.from("contact_messages").insert({
+      name: form.name.trim(),
+      email: form.email.trim().toLowerCase(),
+      phone: form.phone.trim() || null,
+      message: form.message.trim(),
+      region_id: region.id,
+    });
+
+    if (error) {
+      toast.error("We could not send your message right now. Please try again.");
       setLoading(false);
-    }, 1000);
+      return;
+    }
+
+    toast.success("Thank you! Your message has been sent to the Tembo team.");
+      setForm({ name: "", email: "", phone: "", message: "" });
+    setLoading(false);
   };
 
   const waNumber = whatsappNumber.replace(/[^0-9]/g, "");
@@ -73,9 +89,9 @@ const Contact = () => {
               <div className="flex items-start gap-3">
                 <MapPin size={18} className="text-primary mt-1" />
                 <div>
-                  <p className="text-sm font-semibold text-foreground">Delivery</p>
-                  <p className="text-sm text-muted-foreground">{region.deliveryInfo}</p>
-                  <p className="text-sm text-muted-foreground">Est. {region.deliveryDays}</p>
+                  <p className="text-sm font-semibold text-foreground">Tembo Club House</p>
+                  <p className="text-sm text-muted-foreground">{clubHouseAddress}</p>
+                  <p className="text-sm text-muted-foreground">Delivering to {region.name} {region.flag} in {region.deliveryDays}</p>
                 </div>
               </div>
             </div>

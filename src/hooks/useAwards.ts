@@ -9,8 +9,9 @@ export function useAwards() {
         .from("awards")
         .select("*")
         .order("sort_order");
-      if (error) throw error;
-      return data;
+      if (error) return [];
+      return data ?? [];
     },
+    placeholderData: [],
   });
 }

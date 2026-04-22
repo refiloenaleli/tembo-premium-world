@@ -14,6 +14,7 @@ const Navbar = () => {
 
   const links = [
     { to: "/", label: "Home" },
+    { to: "/events", label: "Events" },
     { to: "/shop", label: "Shop" },
     { to: "/about", label: "About" },
     { to: "/contact", label: "Contact" },
@@ -22,11 +23,11 @@ const Navbar = () => {
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-background/90 backdrop-blur-md border-b border-border">
       <div className="container mx-auto px-4 flex items-center justify-between h-16">
-        <Link to="/" className="flex items-center gap-2 flex-shrink-0">
-          <img src="/images/misc/tembo-logo.jpg" alt="Tembo Premium" className="h-8 w-8 sm:h-10 sm:w-10 rounded-full object-cover" />
-          <div className="hidden sm:block">
-            <span className="font-display text-xl font-bold text-foreground tracking-wider">TEMBO</span>
-            <span className="text-xs text-muted-foreground tracking-[0.2em] uppercase ml-1">Premium</span>
+        <Link to="/" className="flex items-center gap-3 flex-shrink-0">
+          <img src="/images/misc/tembo-logo.jpg" alt="Tembo Premium" className="h-12 w-12 rounded-full border border-primary/30 object-cover shadow-gold" />
+          <div className="leading-tight">
+            <p className="font-display text-lg font-bold tracking-[0.14em] text-foreground sm:text-xl">Tembo Premium</p>
+            <p className="text-[10px] uppercase tracking-[0.28em] text-primary sm:text-xs">We are mwasi.</p>
           </div>
         </Link>
 

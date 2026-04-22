@@ -44,6 +44,155 @@ export type Database = {
         }
         Relationships: []
       }
+      contact_messages: {
+        Row: {
+          admin_notes: string | null
+          created_at: string
+          email: string
+          id: string
+          message: string
+          name: string
+          phone: string | null
+          region_id: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          admin_notes?: string | null
+          created_at?: string
+          email: string
+          id?: string
+          message: string
+          name: string
+          phone?: string | null
+          region_id?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          admin_notes?: string | null
+          created_at?: string
+          email?: string
+          id?: string
+          message?: string
+          name?: string
+          phone?: string | null
+          region_id?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      event_images: {
+        Row: {
+          caption: string | null
+          created_at: string
+          event_id: string
+          id: string
+          image_type: string
+          image_url: string
+          sort_order: number
+        }
+        Insert: {
+          caption?: string | null
+          created_at?: string
+          event_id: string
+          id?: string
+          image_type?: string
+          image_url: string
+          sort_order?: number
+        }
+        Update: {
+          caption?: string | null
+          created_at?: string
+          event_id?: string
+          id?: string
+          image_type?: string
+          image_url?: string
+          sort_order?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_images_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      event_subscribers: {
+        Row: {
+          active: boolean
+          email: string
+          id: string
+          last_notified_at: string | null
+          name: string | null
+          subscribed_at: string
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          email: string
+          id?: string
+          last_notified_at?: string | null
+          name?: string | null
+          subscribed_at?: string
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          email?: string
+          id?: string
+          last_notified_at?: string | null
+          name?: string | null
+          subscribed_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      events: {
+        Row: {
+          active: boolean
+          created_at: string
+          description: string | null
+          end_at: string | null
+          id: string
+          location_name: string | null
+          location_url: string | null
+          name: string
+          sort_order: number
+          start_at: string | null
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          description?: string | null
+          end_at?: string | null
+          id?: string
+          location_name?: string | null
+          location_url?: string | null
+          name: string
+          sort_order?: number
+          start_at?: string | null
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          description?: string | null
+          end_at?: string | null
+          id?: string
+          location_name?: string | null
+          location_url?: string | null
+          name?: string
+          sort_order?: number
+          start_at?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       hero_banners: {
         Row: {
           active: boolean | null

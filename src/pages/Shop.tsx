@@ -7,7 +7,7 @@ const Shop = () => {
   const [search, setSearch] = useState("");
   const { data: products, isLoading } = useProducts();
 
-  const categories = ["all", "gin", "brandy", "whisky", "vodka"];
+  const categories = ["all", "gin", "fusion", "brandy", "vodka", "whisky"];
 
   const filtered = (products ?? []).filter((p) => {
     const matchCat = category === "all" || p.category === category;

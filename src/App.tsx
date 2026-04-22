@@ -17,6 +17,8 @@ import Auth from "./pages/Auth";
 import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
 import WhatsAppButton from "@/components/WhatsAppButton";
+import AgeGate from "@/components/AgeGate";
+import Events from "./pages/Events";
 
 const queryClient = new QueryClient();
 
@@ -29,9 +31,11 @@ const App = () => (
             <Toaster />
             <Sonner />
             <BrowserRouter>
+              <AgeGate />
               <Navbar />
               <Routes>
                 <Route path="/" element={<Index />} />
+                <Route path="/events" element={<Events />} />
                 <Route path="/shop" element={<Shop />} />
                 <Route path="/about" element={<About />} />
                 <Route path="/contact" element={<Contact />} />
