@@ -9,6 +9,7 @@ interface AuthContextType {
   loading: boolean;
   signUp: (email: string, password: string, fullName: string) => Promise<{ error: string | null }>;
   signIn: (email: string, password: string) => Promise<{ error: string | null }>;
+  signInWithGoogle: () => Promise<{ error: string | null }>;
   signOut: () => Promise<void>;
 }
 
@@ -28,6 +29,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       .eq("role", "admin")
       .maybeSingle();
     setIsAdmin(!!data);
+  };
+
+  const getRedirectUrl = () => {
+    if (typeof window === "undefined") {
+      return "https://tembo-premium-world.vercel.app/auth";
+    }
+
+    return `${window.location.origin}/auth`;
   };
 
   useEffect(() => {
@@ -58,7 +67,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const { error } = await supabase.auth.signUp({
       email,
       password,
-      options: { data: { full_name: fullName } },
+      options: {
+        data: { full_name: fullName },
+        emailRedirectTo: getRedirectUrl(),
+      },
     });
     return { error: error?.message ?? null };
   };
@@ -68,12 +80,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return { error: error?.message ?? null };
   };
 
+  const signInWithGoogle = async () => {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        redirectTo: getRedirectUrl(),
+      },
+    });
+
+    return { error: error?.message ?? null };
+  };
+
   const signOut = async () => {
     await supabase.auth.signOut();
   };
 
   return (
-    <AuthContext.Provider value={{ session, user, isAdmin, loading, signUp, signIn, signOut }}>
+    <AuthContext.Provider value={{ session, user, isAdmin, loading, signUp, signIn, signInWithGoogle, signOut }}>
       {children}
     </AuthContext.Provider>
   );
