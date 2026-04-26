@@ -44,6 +44,114 @@ export type Database = {
         }
         Relationships: []
       }
+      club_house_cocktails: {
+        Row: {
+          active: boolean
+          created_at: string
+          description: string | null
+          id: string
+          image_url: string | null
+          sort_order: number
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          sort_order?: number
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          sort_order?: number
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      club_house_menus: {
+        Row: {
+          active: boolean
+          created_at: string
+          description: string | null
+          id: string
+          image_url: string | null
+          sort_order: number
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          sort_order?: number
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          sort_order?: number
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      club_house_ratings: {
+        Row: {
+          created_at: string
+          display_name: string
+          id: string
+          item_id: string
+          item_type: string
+          published: boolean
+          rating: number
+          review: string | null
+          title: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          display_name: string
+          id?: string
+          item_id: string
+          item_type: string
+          published?: boolean
+          rating: number
+          review?: string | null
+          title?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          display_name?: string
+          id?: string
+          item_id?: string
+          item_type?: string
+          published?: boolean
+          rating?: number
+          review?: string | null
+          title?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       contact_messages: {
         Row: {
           admin_notes: string | null

@@ -2,28 +2,94 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 const Auth = () => {
   const [mode, setMode] = useState<"login" | "register">("login");
   const [form, setForm] = useState({ email: "", password: "", name: "" });
   const [loading, setLoading] = useState(false);
+  const [processingLink, setProcessingLink] = useState(true);
   const { signIn, signUp, signInWithGoogle, user } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
-    const hash = window.location.hash.startsWith("#") ? window.location.hash.slice(1) : "";
-    const params = new URLSearchParams(hash);
-    const errorDescription = params.get("error_description");
+    const handleAuthLink = async () => {
+      const url = new URL(window.location.href);
+      const hash = url.hash.startsWith("#") ? url.hash.slice(1) : "";
+      const hashParams = new URLSearchParams(hash);
+      const searchParams = url.searchParams;
+      const errorDescription = hashParams.get("error_description") || searchParams.get("error_description");
 
-    if (errorDescription) {
-      toast.error(decodeURIComponent(errorDescription.replace(/\+/g, " ")));
-    }
+      if (errorDescription) {
+        toast.error(decodeURIComponent(errorDescription.replace(/\+/g, " ")));
+        setProcessingLink(false);
+        return;
+      }
+
+      const code = searchParams.get("code");
+      const tokenHash = searchParams.get("token_hash");
+      const otpType = searchParams.get("type") as
+        | "signup"
+        | "recovery"
+        | "invite"
+        | "email"
+        | "email_change"
+        | null;
+      const accessToken = hashParams.get("access_token");
+      const refreshToken = hashParams.get("refresh_token");
+
+      if (code) {
+        const { error } = await supabase.auth.exchangeCodeForSession(code);
+        if (error) {
+          toast.error(error.message);
+        } else {
+          toast.success("Your email has been confirmed. You can continue with Tembo.");
+          window.history.replaceState({}, document.title, "/auth");
+        }
+      } else if (tokenHash && otpType) {
+        const { error } = await supabase.auth.verifyOtp({ token_hash: tokenHash, type: otpType });
+        if (error) {
+          toast.error(error.message);
+        } else {
+          toast.success("Your email has been confirmed. You can continue with Tembo.");
+          window.history.replaceState({}, document.title, "/auth");
+        }
+      } else if (accessToken && refreshToken) {
+        const { error } = await supabase.auth.setSession({
+          access_token: accessToken,
+          refresh_token: refreshToken,
+        });
+
+        if (error) {
+          toast.error(error.message);
+        } else {
+          const type = hashParams.get("type");
+          toast.success(
+            type === "signup"
+              ? "Your email has been confirmed. You can continue with Tembo."
+              : "You are signed in.",
+          );
+          window.history.replaceState({}, document.title, "/auth");
+        }
+      }
+
+      setProcessingLink(false);
+    };
+
+    void handleAuthLink();
   }, []);
 
-  if (user) {
-    navigate("/");
-    return null;
+  useEffect(() => {
+    if (!processingLink && user) {
+      navigate("/");
+    }
+  }, [navigate, processingLink, user]);
+
+  if (processingLink) {
+    return <div className="pt-16 min-h-screen flex items-center justify-center text-muted-foreground">Preparing your Tembo account...</div>;
   }
+
+  if (user) return null;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

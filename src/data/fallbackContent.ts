@@ -199,6 +199,7 @@ export const defaultSiteSettings = {
   contact_email: "nqobin31@gmail.com",
   whatsapp_number: "+27 73 315 9993",
   club_house_address: "94a Sandton Drive, Parkmore, Sandton, Johannesburg",
+  club_house_intro: "Welcome to the Tembo Private Club House, where bold menus and signature cocktails come together for elevated private hosting.",
   shopify_store_domain: "",
   shopify_variant_map: "{}",
 };
