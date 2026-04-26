@@ -2,19 +2,30 @@ import { useEffect, useState } from "react";
 import { Martini } from "lucide-react";
 
 const AGE_GATE_KEY = "tembo-age-gate";
+type AgeGateStatus = "pending" | "allowed" | "blocked";
+
+const getInitialStatus = (): AgeGateStatus => {
+  if (typeof window === "undefined") {
+    return "pending";
+  }
+
+  const saved = window.localStorage.getItem(AGE_GATE_KEY);
+  return saved === "allowed" || saved === "blocked" ? saved : "pending";
+};
 
 const AgeGate = () => {
-  const [status, setStatus] = useState<"pending" | "allowed" | "blocked">("pending");
+  const [status, setStatus] = useState<AgeGateStatus>(getInitialStatus);
 
   useEffect(() => {
-    const saved = window.localStorage.getItem(AGE_GATE_KEY);
-    if (saved === "allowed" || saved === "blocked") {
-      setStatus(saved);
-    }
+    setStatus(getInitialStatus());
   }, []);
 
-  const setGateStatus = (nextStatus: "allowed" | "blocked") => {
-    window.localStorage.setItem(AGE_GATE_KEY, nextStatus);
+  const setGateStatus = (nextStatus: AgeGateStatus) => {
+    if (nextStatus === "pending") {
+      window.localStorage.removeItem(AGE_GATE_KEY);
+    } else {
+      window.localStorage.setItem(AGE_GATE_KEY, nextStatus);
+    }
     setStatus(nextStatus);
   };
 

@@ -182,11 +182,7 @@ const ClubHouse = () => {
         </div>
         {isLoading ? (
           <p className="text-muted-foreground">Loading club house cocktails...</p>
-        ) : cocktails.length === 0 ? (
-          <p className="rounded-xl border border-dashed border-border p-6 text-muted-foreground">
-            No cocktails have been published yet.
-          </p>
-        ) : (
+        ) : cocktails.length > 0 ? (
           <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
             {cocktails.map((cocktail) => {
               const itemRatings = groupedRatings.get(`cocktail:${cocktail.id}`) ?? [];
@@ -223,7 +219,7 @@ const ClubHouse = () => {
               );
             })}
           </div>
-        )}
+        ) : null}
       </section>
 
       <section className="container mx-auto px-4 py-4 pb-12">
@@ -231,11 +227,7 @@ const ClubHouse = () => {
           <p className="text-sm uppercase tracking-[0.3em] text-primary">Menus</p>
           <h2 className="font-display text-3xl text-foreground">Curated private menus</h2>
         </div>
-        {menus.length === 0 ? (
-          <p className="rounded-xl border border-dashed border-border p-6 text-muted-foreground">
-            No menus have been published yet.
-          </p>
-        ) : (
+        {menus.length > 0 ? (
           <div className="grid gap-6 lg:grid-cols-2">
             {menus.map((menu) => (
               <article key={menu.id} className="grid overflow-hidden rounded-2xl border border-border bg-card md:grid-cols-[220px_1fr]">
@@ -255,7 +247,7 @@ const ClubHouse = () => {
               </article>
             ))}
           </div>
-        )}
+        ) : null}
       </section>
 
       <section className="border-t border-border bg-secondary/20">
@@ -265,11 +257,7 @@ const ClubHouse = () => {
               <p className="text-sm uppercase tracking-[0.3em] text-primary">Guest Ratings</p>
               <h2 className="font-display text-3xl text-foreground">Published by the Tembo team</h2>
             </div>
-            {(ratings ?? []).length === 0 ? (
-              <p className="rounded-xl border border-dashed border-border bg-background p-6 text-muted-foreground">
-                Ratings will appear here after guests submit them and the admin publishes them.
-              </p>
-            ) : (
+            {(ratings ?? []).length > 0 ? (
               <div className="grid gap-4">
                 {ratings?.map((rating) => (
                   <article key={rating.id} className="rounded-2xl border border-border bg-background p-5">
@@ -287,7 +275,7 @@ const ClubHouse = () => {
                   </article>
                 ))}
               </div>
-            )}
+            ) : null}
           </div>
 
           <div className="rounded-2xl border border-border bg-card p-6">
