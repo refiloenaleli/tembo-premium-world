@@ -42,8 +42,20 @@ const formatClubHouseError = (error: { code?: string; message: string }) => {
     return "The Club House database tables are not deployed yet. Run the latest Supabase migrations, then try again.";
   }
 
+  if (error.message === "Failed to fetch") {
+    return "The upload request could not reach Supabase Storage.";
+  }
+
   return error.message;
 };
+
+const readFileAsDataUrl = (file: File) =>
+  new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result || ""));
+    reader.onerror = () => reject(new Error("Failed to read the selected image file."));
+    reader.readAsDataURL(file);
+  });
 
 const ratingStars = (count: number) => "★".repeat(count) + "☆".repeat(Math.max(0, 5 - count));
 
@@ -74,16 +86,21 @@ const AdminClubHouse = () => {
     folder: "cocktails" | "menus",
   ) => {
     const path = `club-house/${folder}/${Date.now()}-${file.name}`;
-    const { error } = await supabase.storage.from("site-assets").upload(path, file, { upsert: true });
+    try {
+      const { error } = await supabase.storage.from("site-assets").upload(path, file, { upsert: true });
 
-    if (error) {
-      toast.error(formatClubHouseError(error));
-      return;
+      if (error) {
+        throw error;
+      }
+
+      const { data } = supabase.storage.from("site-assets").getPublicUrl(path);
+      setForm((current) => ({ ...current, image_url: data.publicUrl }));
+      toast.success("Image uploaded");
+    } catch (error) {
+      const fallbackImageUrl = await readFileAsDataUrl(file);
+      setForm((current) => ({ ...current, image_url: fallbackImageUrl }));
+      toast.error("Storage upload failed, so the selected file was attached directly instead.");
     }
-
-    const { data } = supabase.storage.from("site-assets").getPublicUrl(path);
-    setForm((current) => ({ ...current, image_url: data.publicUrl }));
-    toast.success("Image uploaded");
   };
 
   const saveItem = async (table: "club_house_cocktails" | "club_house_menus", form: ItemForm, editingId: string | null) => {

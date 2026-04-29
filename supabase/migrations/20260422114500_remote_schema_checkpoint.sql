@@ -1,0 +1,2 @@
+-- This placeholder migration aligns local history with the linked remote Supabase project.
+-- The remote project already has version 20260422114500 applied.
