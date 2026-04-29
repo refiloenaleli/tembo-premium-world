@@ -4,6 +4,13 @@ import { useAuth } from "@/context/AuthContext";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 
+const clearAuthCallbackUrl = () => {
+  const cleanUrl = new URL(window.location.href);
+  cleanUrl.search = "";
+  cleanUrl.hash = "";
+  window.history.replaceState({}, document.title, cleanUrl.toString());
+};
+
 const Auth = () => {
   const [mode, setMode] = useState<"login" | "register">("login");
   const [form, setForm] = useState({ email: "", password: "", name: "" });
@@ -44,7 +51,7 @@ const Auth = () => {
           toast.error(error.message);
         } else {
           toast.success("Your email has been confirmed. You can continue with Tembo.");
-          window.history.replaceState({}, document.title, "/auth");
+          clearAuthCallbackUrl();
         }
       } else if (tokenHash && otpType) {
         const { error } = await supabase.auth.verifyOtp({ token_hash: tokenHash, type: otpType });
@@ -52,7 +59,7 @@ const Auth = () => {
           toast.error(error.message);
         } else {
           toast.success("Your email has been confirmed. You can continue with Tembo.");
-          window.history.replaceState({}, document.title, "/auth");
+          clearAuthCallbackUrl();
         }
       } else if (accessToken && refreshToken) {
         const { error } = await supabase.auth.setSession({
@@ -69,7 +76,7 @@ const Auth = () => {
               ? "Your email has been confirmed. You can continue with Tembo."
               : "You are signed in.",
           );
-          window.history.replaceState({}, document.title, "/auth");
+          clearAuthCallbackUrl();
         }
       }
 

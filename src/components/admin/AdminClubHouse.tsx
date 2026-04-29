@@ -37,6 +37,14 @@ const itemToForm = (item: ManagedItem): ItemForm => ({
   sort_order: String(item.sort_order ?? 0),
 });
 
+const formatClubHouseError = (error: { code?: string; message: string }) => {
+  if (error.code === "42P01") {
+    return "The Club House database tables are not deployed yet. Run the latest Supabase migrations, then try again.";
+  }
+
+  return error.message;
+};
+
 const ratingStars = (count: number) => "★".repeat(count) + "☆".repeat(Math.max(0, 5 - count));
 
 const AdminClubHouse = () => {
@@ -69,7 +77,7 @@ const AdminClubHouse = () => {
     const { error } = await supabase.storage.from("site-assets").upload(path, file, { upsert: true });
 
     if (error) {
-      toast.error(error.message);
+      toast.error(formatClubHouseError(error));
       return;
     }
 
@@ -97,7 +105,7 @@ const AdminClubHouse = () => {
       : await supabase.from(table).insert(payload);
 
     if (response.error) {
-      toast.error(response.error.message);
+      toast.error(formatClubHouseError(response.error));
       return false;
     }
 
@@ -109,7 +117,7 @@ const AdminClubHouse = () => {
   const deleteItem = async (table: "club_house_cocktails" | "club_house_menus", id: string) => {
     const { error } = await supabase.from(table).delete().eq("id", id);
     if (error) {
-      toast.error(error.message);
+      toast.error(formatClubHouseError(error));
       return;
     }
 
@@ -124,7 +132,7 @@ const AdminClubHouse = () => {
       .eq("id", id);
 
     if (error) {
-      toast.error(error.message);
+      toast.error(formatClubHouseError(error));
       return;
     }
 

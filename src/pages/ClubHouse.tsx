@@ -219,7 +219,11 @@ const ClubHouse = () => {
               );
             })}
           </div>
-        ) : null}
+        ) : (
+          <p className="rounded-xl border border-dashed border-border p-6 text-muted-foreground">
+            No cocktails have been published yet.
+          </p>
+        )}
       </section>
 
       <section className="container mx-auto px-4 py-4 pb-12">
@@ -247,7 +251,11 @@ const ClubHouse = () => {
               </article>
             ))}
           </div>
-        ) : null}
+        ) : (
+          <p className="rounded-xl border border-dashed border-border p-6 text-muted-foreground">
+            No menus have been published yet.
+          </p>
+        )}
       </section>
 
       <section className="border-t border-border bg-secondary/20">
@@ -275,7 +283,11 @@ const ClubHouse = () => {
                   </article>
                 ))}
               </div>
-            ) : null}
+            ) : (
+              <p className="rounded-xl border border-dashed border-border bg-background p-6 text-muted-foreground">
+                Ratings will appear here after guests submit them and the admin publishes them.
+              </p>
+            )}
           </div>
 
           <div className="rounded-2xl border border-border bg-card p-6">

@@ -15,6 +15,20 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+const getAuthPath = () => {
+  const basePath = import.meta.env.BASE_URL || "/";
+  const normalizedBasePath = basePath.endsWith("/") ? basePath.slice(0, -1) : basePath;
+  return `${normalizedBasePath || ""}/auth`;
+};
+
+const getAuthRedirectUrl = () => {
+  if (typeof window === "undefined") {
+    return "https://tembo-premium-world.vercel.app/auth";
+  }
+
+  return new URL(getAuthPath(), window.location.origin).toString();
+};
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null>(null);
@@ -29,14 +43,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       .eq("role", "admin")
       .maybeSingle();
     setIsAdmin(!!data);
-  };
-
-  const getRedirectUrl = () => {
-    if (typeof window === "undefined") {
-      return "https://tembo-premium-world.vercel.app/auth";
-    }
-
-    return `${window.location.origin}/auth`;
   };
 
   useEffect(() => {
@@ -69,7 +75,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       password,
       options: {
         data: { full_name: fullName },
-        emailRedirectTo: getRedirectUrl(),
+        emailRedirectTo: getAuthRedirectUrl(),
       },
     });
     return { error: error?.message ?? null };
@@ -84,7 +90,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: getRedirectUrl(),
+        redirectTo: getAuthRedirectUrl(),
       },
     });
 
