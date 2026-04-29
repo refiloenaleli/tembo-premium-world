@@ -252,7 +252,7 @@ const AdminClubHouse = () => {
                     {item.active ? "Published" : "Hidden"}
                   </span>
                 </div>
-                <p className="text-sm text-muted-foreground">{item.description || "No description added yet."}</p>
+                <p className="whitespace-pre-line text-sm text-muted-foreground">{item.description || "No description added yet."}</p>
               </div>
               <div className="flex flex-wrap items-start gap-2">
                 <button
@@ -337,7 +337,7 @@ const AdminClubHouse = () => {
                     </div>
                     <p className="text-sm text-primary">{ratingStars(rating.rating)}</p>
                     {rating.title && <p className="text-base font-semibold text-foreground">{rating.title}</p>}
-                    {rating.review && <p className="text-sm leading-6 text-muted-foreground">{rating.review}</p>}
+                    {rating.review && <p className="whitespace-pre-line text-sm leading-6 text-muted-foreground">{rating.review}</p>}
                   </div>
                   <button
                     onClick={() => toggleRatingPublished(rating.id, rating.published)}

@@ -198,7 +198,7 @@ const ClubHouse = () => {
                   <div className="space-y-4 p-5">
                     <div>
                       <h3 className="font-display text-2xl text-foreground">{cocktail.title}</h3>
-                      <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                      <p className="mt-2 whitespace-pre-line text-sm leading-6 text-muted-foreground">
                         {cocktail.description || "Description coming soon."}
                       </p>
                     </div>
@@ -244,7 +244,7 @@ const ClubHouse = () => {
                 )}
                 <div className="space-y-3 p-5">
                   <h3 className="font-display text-2xl text-foreground">{menu.title}</h3>
-                  <p className="text-sm leading-6 text-muted-foreground">
+                  <p className="whitespace-pre-line text-sm leading-6 text-muted-foreground">
                     {menu.description || "Description coming soon."}
                   </p>
                 </div>

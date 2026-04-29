@@ -16,7 +16,7 @@ const Auth = () => {
   const [form, setForm] = useState({ email: "", password: "", name: "" });
   const [loading, setLoading] = useState(false);
   const [processingLink, setProcessingLink] = useState(true);
-  const { signIn, signUp, signInWithGoogle, user } = useAuth();
+  const { signIn, signUp, user } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -128,16 +128,6 @@ const Auth = () => {
     setLoading(false);
   };
 
-  const handleGoogleLogin = async () => {
-    setLoading(true);
-    const { error } = await signInWithGoogle();
-
-    if (error) {
-      toast.error(error);
-      setLoading(false);
-    }
-  };
-
   return (
     <div className="pt-16 min-h-screen flex items-center justify-center">
       <div className="w-full max-w-md p-8">
@@ -165,21 +155,6 @@ const Auth = () => {
               Register
             </button>
           </div>
-
-          <button
-            type="button"
-            onClick={handleGoogleLogin}
-            disabled={loading}
-            className="mb-4 flex w-full items-center justify-center gap-3 rounded border border-border bg-secondary px-4 py-3 text-sm font-semibold text-foreground transition-colors hover:bg-muted disabled:opacity-50"
-          >
-            <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
-              <path fill="#EA4335" d="M12 10.2v3.9h5.5c-.2 1.3-1.5 3.9-5.5 3.9-3.3 0-6-2.7-6-6s2.7-6 6-6c1.9 0 3.2.8 3.9 1.5l2.6-2.5C16.9 3.5 14.7 2.5 12 2.5A9.5 9.5 0 0 0 2.5 12 9.5 9.5 0 0 0 12 21.5c5.5 0 9.1-3.9 9.1-9.3 0-.6-.1-1.1-.2-1.5H12Z" />
-              <path fill="#34A853" d="M3.6 7.6 6.8 10c.9-1.8 2.8-3 5.2-3 1.9 0 3.2.8 3.9 1.5l2.6-2.5C16.9 3.5 14.7 2.5 12 2.5c-3.7 0-7 2.1-8.4 5.1Z" />
-              <path fill="#FBBC05" d="M2.5 12c0 1.5.4 3 1.1 4.3l3.7-2.8c-.2-.5-.3-1-.3-1.5s.1-1 .3-1.5L3.6 7.6A9.4 9.4 0 0 0 2.5 12Z" />
-              <path fill="#4285F4" d="M12 21.5c2.6 0 4.8-.9 6.4-2.5l-3.1-2.4c-.8.6-1.8 1-3.3 1-2.4 0-4.4-1.6-5.1-3.8l-3.8 2.9c1.4 2.9 4.4 4.8 8.9 4.8Z" />
-            </svg>
-            Continue with Google
-          </button>
 
           <p className="mb-4 text-center text-xs text-muted-foreground">
             If you sign up with email, check your inbox and confirm your address before signing in.
