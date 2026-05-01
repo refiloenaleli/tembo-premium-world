@@ -131,7 +131,7 @@ const AdminClubHouse = () => {
     const payload = {
       title: form.title.trim(),
       description: form.description.trim() || null,
-      image_url: form.image_url.trim() || null,
+      image_url: table === "club_house_menus" ? null : form.image_url.trim() || null,
       active: form.active,
       sort_order: Number.parseInt(form.sort_order, 10) || 0,
     };
@@ -244,33 +244,39 @@ const AdminClubHouse = () => {
           />
         </div>
 
-        <div className="grid gap-4 md:grid-cols-[1fr_auto]">
-          <div>
-            <label className="mb-1 block text-xs uppercase tracking-[0.2em] text-muted-foreground">Image URL</label>
-            <input
-              className="w-full rounded-md border border-border bg-secondary px-3 py-2 text-sm text-foreground"
-              value={form.image_url}
-              onChange={(event) => setForm((current) => ({ ...current, image_url: event.target.value }))}
-            />
-          </div>
-          <div className="flex items-end">
-            <label className={`inline-flex items-center gap-2 rounded-md border border-border px-4 py-2 text-sm font-semibold transition-colors ${clubHouseTablesReady ? "cursor-pointer text-foreground hover:bg-secondary" : "cursor-not-allowed text-muted-foreground"}`}>
-              <Upload size={15} />
-              Upload
+        {folder === "cocktails" ? (
+          <div className="grid gap-4 md:grid-cols-[1fr_auto]">
+            <div>
+              <label className="mb-1 block text-xs uppercase tracking-[0.2em] text-muted-foreground">Image URL</label>
               <input
-                type="file"
-                accept="image/*"
-                className="hidden"
-                disabled={!clubHouseTablesReady}
-                onChange={(event) => {
-                  if (event.target.files?.[0]) {
-                    uploadImage(event.target.files[0], setForm, folder);
-                  }
-                }}
+                className="w-full rounded-md border border-border bg-secondary px-3 py-2 text-sm text-foreground"
+                value={form.image_url}
+                onChange={(event) => setForm((current) => ({ ...current, image_url: event.target.value }))}
               />
-            </label>
+            </div>
+            <div className="flex items-end">
+              <label className={`inline-flex items-center gap-2 rounded-md border border-border px-4 py-2 text-sm font-semibold transition-colors ${clubHouseTablesReady ? "cursor-pointer text-foreground hover:bg-secondary" : "cursor-not-allowed text-muted-foreground"}`}>
+                <Upload size={15} />
+                Upload
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  disabled={!clubHouseTablesReady}
+                  onChange={(event) => {
+                    if (event.target.files?.[0]) {
+                      uploadImage(event.target.files[0], setForm, folder);
+                    }
+                  }}
+                />
+              </label>
+            </div>
           </div>
-        </div>
+        ) : (
+          <div className="rounded-lg border border-primary/20 bg-primary/5 px-4 py-3 text-sm text-muted-foreground">
+            Menu cards now use a styled title block on the public page, so menu images are not shown.
+          </div>
+        )}
 
         <label className="inline-flex items-center gap-2 text-sm text-foreground">
           <input
@@ -315,11 +321,17 @@ const AdminClubHouse = () => {
         <div className="grid gap-4">
           {items.map((item) => (
             <article key={item.id} className="grid gap-4 rounded-xl border border-border bg-secondary/10 p-4 lg:grid-cols-[96px_1fr_auto]">
-              {item.image_url ? (
-                <img src={item.image_url} alt={item.title} className="h-24 w-24 rounded-lg object-cover" />
+              {folder === "cocktails" ? (
+                item.image_url ? (
+                  <img src={item.image_url} alt={item.title} className="h-24 w-24 rounded-lg object-cover" />
+                ) : (
+                  <div className="flex h-24 w-24 items-center justify-center rounded-lg bg-secondary text-xs uppercase tracking-[0.2em] text-muted-foreground">
+                    No image
+                  </div>
+                )
               ) : (
-                <div className="flex h-24 w-24 items-center justify-center rounded-lg bg-secondary text-xs uppercase tracking-[0.2em] text-muted-foreground">
-                  No image
+                <div className="flex h-24 w-24 items-center justify-center rounded-lg border border-primary/20 bg-[radial-gradient(circle_at_top,_hsl(var(--primary)/0.24),_transparent_65%),linear-gradient(135deg,_hsl(var(--background)),_hsl(var(--secondary)/0.9))] px-2 text-center text-xs uppercase tracking-[0.2em] text-primary">
+                  Menu Title
                 </div>
               )}
               <div className="space-y-2">
