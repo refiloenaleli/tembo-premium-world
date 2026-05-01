@@ -135,10 +135,6 @@ const AgeGate = () => {
                 Become a Tembo Premium Member
               </h1>
 
-              <p className="mt-5 max-w-2xl text-sm leading-6 text-white/78 sm:text-base">
-                Explore premium spirits crafted for you. Confirm your legal drinking age to enter.
-              </p>
-
               <div className="mt-8 grid gap-3 sm:grid-cols-[1fr_1fr_1.4fr]">
                 <input
                   inputMode="numeric"
@@ -197,9 +193,6 @@ const AgeGate = () => {
                 </button>
               )}
 
-              <p className="mt-5 text-center text-xs leading-5 text-white/72">
-                By entering this site you are agreeing to the Terms of Use and Privacy Policy.
-              </p>
             </div>
           </div>
         </div>

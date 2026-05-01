@@ -161,10 +161,6 @@ const ClubHouse = () => {
             <h1 className="font-display text-4xl text-foreground sm:text-5xl">
               Tembo Private Club House
             </h1>
-            <p className="max-w-2xl text-base leading-7 text-muted-foreground sm:text-lg">
-              {settings?.club_house_intro ||
-                "Welcome to the Tembo Private Club House, where bold menus and signature cocktails come together for elevated private hosting."}
-            </p>
             <div className="flex flex-wrap gap-4 text-sm text-foreground">
               <span className="rounded-full border border-primary/30 bg-primary/10 px-4 py-2">
                 {settings?.club_house_address || "Private club house details coming soon"}
@@ -305,9 +301,6 @@ const ClubHouse = () => {
             <div className="mb-5">
               <p className="text-sm uppercase tracking-[0.3em] text-primary">Rate Your Experience</p>
               <h2 className="font-display text-2xl text-foreground">Send a rating for review</h2>
-              <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                Guests can rate cocktails or menus. Ratings go live only after the admin publishes them.
-              </p>
             </div>
 
             {!clubHouseTablesReady && (

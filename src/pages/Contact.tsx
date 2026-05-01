@@ -62,9 +62,6 @@ const Contact = () => {
         <div className="grid md:grid-cols-2 gap-12">
           <div>
             <h2 className="font-display text-2xl text-foreground mb-6">Order & Delivery</h2>
-            <p className="text-muted-foreground mb-6">
-              Place your order through our shop and we'll contact you to arrange delivery to {region.name} {region.flag}.
-            </p>
             <div className="space-y-4">
               <div className="flex items-start gap-3">
                 <Mail size={18} className="text-primary mt-1" />
@@ -102,7 +99,6 @@ const Contact = () => {
                   >
                     Open live location
                   </a>
-                  <p className="text-sm text-muted-foreground">Delivering to {region.name} {region.flag} in {region.deliveryDays}</p>
                 </div>
               </div>
             </div>

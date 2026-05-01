@@ -129,9 +129,6 @@ const Events = () => {
           <div className="max-w-3xl">
             <p className="mb-3 text-xs uppercase tracking-[0.35em] text-primary">Tembo Events</p>
             <h1 className="font-display text-4xl text-foreground md:text-6xl">Where Tembo moments become memories.</h1>
-            <p className="mt-5 max-w-2xl text-base leading-8 text-muted-foreground">
-              Discover the experiences we have already shared, see what is coming next, and subscribe for email alerts on upcoming Tembo events.
-            </p>
           </div>
         </div>
       </section>
@@ -141,9 +138,6 @@ const Events = () => {
           <div>
             <p className="text-xs uppercase tracking-[0.3em] text-primary">Stay In The Loop</p>
             <h2 className="mt-3 font-display text-3xl text-foreground">Get upcoming event notifications by email.</h2>
-            <p className="mt-4 max-w-xl text-sm leading-7 text-muted-foreground">
-              Subscribe once and we will notify you when the next Tembo event is announced or updated.
-            </p>
           </div>
 
           <form onSubmit={subscribe} className="rounded-2xl border border-border bg-card p-6">
@@ -153,7 +147,6 @@ const Events = () => {
               </div>
               <div>
                 <h3 className="font-semibold text-foreground">Event Email Alerts</h3>
-                <p className="text-sm text-muted-foreground">Receive upcoming event updates.</p>
               </div>
             </div>
             <div className="space-y-3">
