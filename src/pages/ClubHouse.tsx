@@ -196,9 +196,15 @@ const ClubHouse = () => {
               return (
                 <article key={cocktail.id} className="overflow-hidden rounded-2xl border border-border bg-card">
                   {cocktail.image_url ? (
-                    <img src={cocktail.image_url} alt={cocktail.title} className="h-64 w-full object-cover" />
+                    <div className="border-b border-border bg-secondary/20 p-4">
+                      <img
+                        src={cocktail.image_url}
+                        alt={cocktail.title}
+                        className="mx-auto h-auto max-h-[24rem] w-full object-contain"
+                      />
+                    </div>
                   ) : (
-                    <div className="flex h-64 items-center justify-center bg-secondary text-sm uppercase tracking-[0.3em] text-muted-foreground">
+                    <div className="flex h-64 items-center justify-center border-b border-border bg-secondary text-sm uppercase tracking-[0.3em] text-muted-foreground">
                       Tembo Cocktail
                     </div>
                   )}
@@ -241,11 +247,17 @@ const ClubHouse = () => {
         {menus.length > 0 ? (
           <div className="grid gap-6 lg:grid-cols-2">
             {menus.map((menu) => (
-              <article key={menu.id} className="grid overflow-hidden rounded-2xl border border-border bg-card md:grid-cols-[220px_1fr]">
+              <article key={menu.id} className="overflow-hidden rounded-2xl border border-border bg-card">
                 {menu.image_url ? (
-                  <img src={menu.image_url} alt={menu.title} className="h-full min-h-56 w-full object-cover" />
+                  <div className="border-b border-border bg-secondary/20 p-4">
+                    <img
+                      src={menu.image_url}
+                      alt={menu.title}
+                      className="mx-auto h-auto max-h-[28rem] w-full object-contain"
+                    />
+                  </div>
                 ) : (
-                  <div className="flex min-h-56 items-center justify-center bg-secondary text-sm uppercase tracking-[0.3em] text-muted-foreground">
+                  <div className="flex min-h-56 items-center justify-center border-b border-border bg-secondary text-sm uppercase tracking-[0.3em] text-muted-foreground">
                     Tembo Menu
                   </div>
                 )}
