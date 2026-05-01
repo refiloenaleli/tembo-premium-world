@@ -248,21 +248,13 @@ const ClubHouse = () => {
           <div className="grid gap-6 lg:grid-cols-2">
             {menus.map((menu) => (
               <article key={menu.id} className="overflow-hidden rounded-2xl border border-border bg-card">
-                {menu.image_url ? (
-                  <div className="border-b border-border bg-secondary/20 p-4">
-                    <img
-                      src={menu.image_url}
-                      alt={menu.title}
-                      className="mx-auto h-auto max-h-[28rem] w-full object-contain"
-                    />
+                <div className="border-b border-border bg-[radial-gradient(circle_at_top,_hsl(var(--primary)/0.32),_transparent_58%),linear-gradient(135deg,_hsl(var(--background)),_hsl(var(--secondary)/0.9))] px-5 py-8">
+                  <div className="rounded-2xl border border-primary/20 bg-background/40 px-5 py-6 shadow-[inset_0_1px_0_hsl(var(--background)/0.35)] backdrop-blur-sm">
+                    <p className="text-xs uppercase tracking-[0.35em] text-primary/80">Tembo Menu</p>
+                    <h3 className="mt-3 font-display text-3xl leading-tight text-primary sm:text-4xl">{menu.title}</h3>
                   </div>
-                ) : (
-                  <div className="flex min-h-56 items-center justify-center border-b border-border bg-secondary text-sm uppercase tracking-[0.3em] text-muted-foreground">
-                    Tembo Menu
-                  </div>
-                )}
+                </div>
                 <div className="space-y-3 p-5">
-                  <h3 className="font-display text-2xl text-foreground">{menu.title}</h3>
                   <p className="whitespace-pre-line text-sm leading-6 text-muted-foreground">
                     {menu.description || "Description coming soon."}
                   </p>
