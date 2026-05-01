@@ -9,6 +9,7 @@ import {
   useClubHouseCatalog,
   usePublishedClubHouseRatings,
   type ClubHouseRating,
+  isClubHouseFallbackId,
 } from "@/hooks/useClubHouse";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 
@@ -60,6 +61,7 @@ const ClubHouse = () => {
 
     return [...cocktailTargets, ...menuTargets];
   }, [catalog]);
+  const clubHouseTablesReady = ratingTargets.every((target) => !isClubHouseFallbackId(target.id));
 
   const groupedRatings = useMemo(() => {
     const map = new Map<string, ClubHouseRating[]>();
@@ -98,6 +100,11 @@ const ClubHouse = () => {
 
   const submitRating = async (event: React.FormEvent) => {
     event.preventDefault();
+
+    if (!clubHouseTablesReady) {
+      toast.error("Ratings will open after the Club House database is fully deployed.");
+      return;
+    }
 
     if (!user) {
       toast.error("Please sign in before rating the Tembo Club House experience.");
@@ -299,6 +306,12 @@ const ClubHouse = () => {
               </p>
             </div>
 
+            {!clubHouseTablesReady && (
+              <div className="mb-5 rounded-xl border border-amber-500/30 bg-amber-500/10 p-4 text-sm text-foreground">
+                Ratings are temporarily paused while the live Club House database tables are being deployed.
+              </div>
+            )}
+
             {!user && (
               <div className="mb-5 rounded-xl border border-primary/20 bg-primary/10 p-4 text-sm text-foreground">
                 Please <Link to="/auth" className="font-semibold text-primary underline-offset-4 hover:underline">sign in</Link> to submit a rating.
@@ -306,78 +319,80 @@ const ClubHouse = () => {
             )}
 
             <form onSubmit={submitRating} className="space-y-4">
-              <div>
-                <label className="mb-1 block text-xs uppercase tracking-[0.2em] text-muted-foreground">Item Type</label>
-                <select
-                  className="w-full rounded-md border border-border bg-secondary px-3 py-2 text-sm text-foreground"
-                  value={form.itemType}
-                  onChange={(event) => syncSelectedTarget(event.target.value as "cocktail" | "menu")}
+              <fieldset disabled={!clubHouseTablesReady || submitting} className="space-y-4 disabled:opacity-60">
+                <div>
+                  <label className="mb-1 block text-xs uppercase tracking-[0.2em] text-muted-foreground">Item Type</label>
+                  <select
+                    className="w-full rounded-md border border-border bg-secondary px-3 py-2 text-sm text-foreground"
+                    value={form.itemType}
+                    onChange={(event) => syncSelectedTarget(event.target.value as "cocktail" | "menu")}
+                  >
+                    <option value="cocktail">Cocktail</option>
+                    <option value="menu">Menu</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="mb-1 block text-xs uppercase tracking-[0.2em] text-muted-foreground">Choose Item</label>
+                  <select
+                    className="w-full rounded-md border border-border bg-secondary px-3 py-2 text-sm text-foreground"
+                    value={form.itemId}
+                    onChange={(event) => setForm((current) => ({ ...current, itemId: event.target.value }))}
+                  >
+                    <option value="">Select an item</option>
+                    {ratingTargets
+                      .filter((target) => target.type === form.itemType)
+                      .map((target) => (
+                        <option key={target.id} value={target.id}>
+                          {target.label}
+                        </option>
+                      ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="mb-1 block text-xs uppercase tracking-[0.2em] text-muted-foreground">Rating</label>
+                  <select
+                    className="w-full rounded-md border border-border bg-secondary px-3 py-2 text-sm text-foreground"
+                    value={form.rating}
+                    onChange={(event) => setForm((current) => ({ ...current, rating: Number(event.target.value) }))}
+                  >
+                    <option value={5}>5 Stars</option>
+                    <option value={4}>4 Stars</option>
+                    <option value={3}>3 Stars</option>
+                    <option value={2}>2 Stars</option>
+                    <option value={1}>1 Star</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="mb-1 block text-xs uppercase tracking-[0.2em] text-muted-foreground">Title</label>
+                  <input
+                    className="w-full rounded-md border border-border bg-secondary px-3 py-2 text-sm text-foreground"
+                    value={form.title}
+                    onChange={(event) => setForm((current) => ({ ...current, title: event.target.value }))}
+                    placeholder="Short headline for your review"
+                  />
+                </div>
+
+                <div>
+                  <label className="mb-1 block text-xs uppercase tracking-[0.2em] text-muted-foreground">Review</label>
+                  <textarea
+                    className="min-h-32 w-full rounded-md border border-border bg-secondary px-3 py-2 text-sm text-foreground"
+                    value={form.review}
+                    onChange={(event) => setForm((current) => ({ ...current, review: event.target.value }))}
+                    placeholder="Tell Tembo guests what stood out."
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={submitting || !user || !clubHouseTablesReady}
+                  className="w-full rounded-md bg-primary px-4 py-3 text-sm font-semibold uppercase tracking-[0.15em] text-primary-foreground disabled:opacity-50"
                 >
-                  <option value="cocktail">Cocktail</option>
-                  <option value="menu">Menu</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="mb-1 block text-xs uppercase tracking-[0.2em] text-muted-foreground">Choose Item</label>
-                <select
-                  className="w-full rounded-md border border-border bg-secondary px-3 py-2 text-sm text-foreground"
-                  value={form.itemId}
-                  onChange={(event) => setForm((current) => ({ ...current, itemId: event.target.value }))}
-                >
-                  <option value="">Select an item</option>
-                  {ratingTargets
-                    .filter((target) => target.type === form.itemType)
-                    .map((target) => (
-                      <option key={target.id} value={target.id}>
-                        {target.label}
-                      </option>
-                    ))}
-                </select>
-              </div>
-
-              <div>
-                <label className="mb-1 block text-xs uppercase tracking-[0.2em] text-muted-foreground">Rating</label>
-                <select
-                  className="w-full rounded-md border border-border bg-secondary px-3 py-2 text-sm text-foreground"
-                  value={form.rating}
-                  onChange={(event) => setForm((current) => ({ ...current, rating: Number(event.target.value) }))}
-                >
-                  <option value={5}>5 Stars</option>
-                  <option value={4}>4 Stars</option>
-                  <option value={3}>3 Stars</option>
-                  <option value={2}>2 Stars</option>
-                  <option value={1}>1 Star</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="mb-1 block text-xs uppercase tracking-[0.2em] text-muted-foreground">Title</label>
-                <input
-                  className="w-full rounded-md border border-border bg-secondary px-3 py-2 text-sm text-foreground"
-                  value={form.title}
-                  onChange={(event) => setForm((current) => ({ ...current, title: event.target.value }))}
-                  placeholder="Short headline for your review"
-                />
-              </div>
-
-              <div>
-                <label className="mb-1 block text-xs uppercase tracking-[0.2em] text-muted-foreground">Review</label>
-                <textarea
-                  className="min-h-32 w-full rounded-md border border-border bg-secondary px-3 py-2 text-sm text-foreground"
-                  value={form.review}
-                  onChange={(event) => setForm((current) => ({ ...current, review: event.target.value }))}
-                  placeholder="Tell Tembo guests what stood out."
-                />
-              </div>
-
-              <button
-                type="submit"
-                disabled={submitting || !user}
-                className="w-full rounded-md bg-primary px-4 py-3 text-sm font-semibold uppercase tracking-[0.15em] text-primary-foreground disabled:opacity-50"
-              >
-                {submitting ? "Submitting..." : "Submit Rating"}
-              </button>
+                  {clubHouseTablesReady ? (submitting ? "Submitting..." : "Submit Rating") : "Ratings Coming Soon"}
+                </button>
+              </fieldset>
             </form>
           </div>
         </div>

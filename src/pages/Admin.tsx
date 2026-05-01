@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import { Package, Tag, ShoppingCart, LogOut, ArrowLeft, Image, Trophy, Settings, CalendarDays, Mail, Martini } from "lucide-react";
 import AdminOrders from "@/components/admin/AdminOrders";
@@ -20,8 +20,7 @@ const Admin = () => {
   if (loading) return <div className="pt-16 min-h-screen flex items-center justify-center text-muted-foreground">Loading...</div>;
   
   if (!user) {
-    navigate("/auth");
-    return null;
+    return <Navigate to="/auth" replace />;
   }
 
   if (!isAdmin) {

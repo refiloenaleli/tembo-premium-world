@@ -14,6 +14,9 @@ const Contact = () => {
   const contactEmail = settings?.contact_email || "nqobin31@gmail.com";
   const whatsappNumber = settings?.whatsapp_number || "+27 73 315 9993";
   const clubHouseAddress = settings?.club_house_address || "94a Sandton Drive, Parkmore, Sandton, Johannesburg";
+  const clubHouseMapUrl =
+    settings?.club_house_map_url ||
+    `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(clubHouseAddress)}`;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -91,6 +94,14 @@ const Contact = () => {
                 <div>
                   <p className="text-sm font-semibold text-foreground">Tembo Club House</p>
                   <p className="text-sm text-muted-foreground">{clubHouseAddress}</p>
+                  <a
+                    href={clubHouseMapUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-1 inline-flex text-sm text-primary transition-colors hover:text-primary/80"
+                  >
+                    Open live location
+                  </a>
                   <p className="text-sm text-muted-foreground">Delivering to {region.name} {region.flag} in {region.deliveryDays}</p>
                 </div>
               </div>

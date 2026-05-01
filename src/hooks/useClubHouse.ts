@@ -6,6 +6,8 @@ export type ClubHouseCocktail = Tables<"club_house_cocktails">;
 export type ClubHouseMenu = Tables<"club_house_menus">;
 export type ClubHouseRating = Tables<"club_house_ratings">;
 
+export const isClubHouseFallbackId = (id: string) => id.startsWith("fallback-");
+
 const fallbackCocktails: ClubHouseCocktail[] = [
   {
     id: "fallback-cocktail-1",

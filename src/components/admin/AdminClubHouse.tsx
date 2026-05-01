@@ -9,6 +9,7 @@ import {
   useAllClubHouseRatings,
   type ClubHouseCocktail,
   type ClubHouseMenu,
+  isClubHouseFallbackId,
 } from "@/hooks/useClubHouse";
 
 type ManagedItem = ClubHouseCocktail | ClubHouseMenu;
@@ -57,13 +58,14 @@ const readFileAsDataUrl = (file: File) =>
     reader.readAsDataURL(file);
   });
 
-const ratingStars = (count: number) => "★".repeat(count) + "☆".repeat(Math.max(0, 5 - count));
+const ratingStars = (count: number) => "\u2605".repeat(count) + "\u2606".repeat(Math.max(0, 5 - count));
 
 const AdminClubHouse = () => {
   const { data: cocktails, isLoading: cocktailsLoading } = useAllClubHouseCocktails();
   const { data: menus, isLoading: menusLoading } = useAllClubHouseMenus();
   const { data: ratings, isLoading: ratingsLoading } = useAllClubHouseRatings();
   const queryClient = useQueryClient();
+  const clubHouseTablesReady = ![...(cocktails ?? []), ...(menus ?? [])].some((item) => isClubHouseFallbackId(item.id));
 
   const [cocktailForm, setCocktailForm] = useState<ItemForm>(emptyForm);
   const [menuForm, setMenuForm] = useState<ItemForm>(emptyForm);
@@ -80,11 +82,24 @@ const AdminClubHouse = () => {
     queryClient.invalidateQueries({ queryKey: ["all-club-house-ratings"] });
   };
 
+  const requireLiveTables = (actionLabel: string) => {
+    if (clubHouseTablesReady) {
+      return true;
+    }
+
+    toast.error(`${actionLabel} will work after the latest Supabase migrations are deployed.`);
+    return false;
+  };
+
   const uploadImage = async (
     file: File,
     setForm: Dispatch<SetStateAction<ItemForm>>,
     folder: "cocktails" | "menus",
   ) => {
+    if (!requireLiveTables("Club House image uploads")) {
+      return;
+    }
+
     const path = `club-house/${folder}/${Date.now()}-${file.name}`;
     try {
       const { error } = await supabase.storage.from("site-assets").upload(path, file, { upsert: true });
@@ -104,6 +119,10 @@ const AdminClubHouse = () => {
   };
 
   const saveItem = async (table: "club_house_cocktails" | "club_house_menus", form: ItemForm, editingId: string | null) => {
+    if (!requireLiveTables("Club House editing")) {
+      return false;
+    }
+
     if (!form.title.trim()) {
       toast.error("Title is required");
       return false;
@@ -132,6 +151,10 @@ const AdminClubHouse = () => {
   };
 
   const deleteItem = async (table: "club_house_cocktails" | "club_house_menus", id: string) => {
+    if (!requireLiveTables("Club House editing")) {
+      return;
+    }
+
     const { error } = await supabase.from(table).delete().eq("id", id);
     if (error) {
       toast.error(formatClubHouseError(error));
@@ -143,6 +166,10 @@ const AdminClubHouse = () => {
   };
 
   const toggleRatingPublished = async (id: string, published: boolean) => {
+    if (!requireLiveTables("Club House ratings moderation")) {
+      return;
+    }
+
     const { error } = await supabase
       .from("club_house_ratings")
       .update({ published: !published })
@@ -180,7 +207,8 @@ const AdminClubHouse = () => {
             setEditingId(null);
             setForm(emptyForm);
           }}
-          className="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground"
+          disabled={!clubHouseTablesReady}
+          className="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground disabled:cursor-not-allowed disabled:opacity-50"
         >
           <Plus size={16} /> New
         </button>
@@ -190,35 +218,66 @@ const AdminClubHouse = () => {
         <div className="grid gap-4 md:grid-cols-2">
           <div>
             <label className="mb-1 block text-xs uppercase tracking-[0.2em] text-muted-foreground">Title</label>
-            <input className="w-full rounded-md border border-border bg-secondary px-3 py-2 text-sm text-foreground" value={form.title} onChange={(event) => setForm((current) => ({ ...current, title: event.target.value }))} />
+            <input
+              className="w-full rounded-md border border-border bg-secondary px-3 py-2 text-sm text-foreground"
+              value={form.title}
+              onChange={(event) => setForm((current) => ({ ...current, title: event.target.value }))}
+            />
           </div>
           <div>
             <label className="mb-1 block text-xs uppercase tracking-[0.2em] text-muted-foreground">Sort Order</label>
-            <input type="number" className="w-full rounded-md border border-border bg-secondary px-3 py-2 text-sm text-foreground" value={form.sort_order} onChange={(event) => setForm((current) => ({ ...current, sort_order: event.target.value }))} />
+            <input
+              type="number"
+              className="w-full rounded-md border border-border bg-secondary px-3 py-2 text-sm text-foreground"
+              value={form.sort_order}
+              onChange={(event) => setForm((current) => ({ ...current, sort_order: event.target.value }))}
+            />
           </div>
         </div>
 
         <div>
           <label className="mb-1 block text-xs uppercase tracking-[0.2em] text-muted-foreground">Description</label>
-          <textarea className="min-h-28 w-full rounded-md border border-border bg-secondary px-3 py-2 text-sm text-foreground" value={form.description} onChange={(event) => setForm((current) => ({ ...current, description: event.target.value }))} />
+          <textarea
+            className="min-h-28 w-full rounded-md border border-border bg-secondary px-3 py-2 text-sm text-foreground"
+            value={form.description}
+            onChange={(event) => setForm((current) => ({ ...current, description: event.target.value }))}
+          />
         </div>
 
         <div className="grid gap-4 md:grid-cols-[1fr_auto]">
           <div>
             <label className="mb-1 block text-xs uppercase tracking-[0.2em] text-muted-foreground">Image URL</label>
-            <input className="w-full rounded-md border border-border bg-secondary px-3 py-2 text-sm text-foreground" value={form.image_url} onChange={(event) => setForm((current) => ({ ...current, image_url: event.target.value }))} />
+            <input
+              className="w-full rounded-md border border-border bg-secondary px-3 py-2 text-sm text-foreground"
+              value={form.image_url}
+              onChange={(event) => setForm((current) => ({ ...current, image_url: event.target.value }))}
+            />
           </div>
           <div className="flex items-end">
-            <label className="inline-flex cursor-pointer items-center gap-2 rounded-md border border-border px-4 py-2 text-sm font-semibold text-foreground transition-colors hover:bg-secondary">
+            <label className={`inline-flex items-center gap-2 rounded-md border border-border px-4 py-2 text-sm font-semibold transition-colors ${clubHouseTablesReady ? "cursor-pointer text-foreground hover:bg-secondary" : "cursor-not-allowed text-muted-foreground"}`}>
               <Upload size={15} />
               Upload
-              <input type="file" accept="image/*" className="hidden" onChange={(event) => { if (event.target.files?.[0]) uploadImage(event.target.files[0], setForm, folder); }} />
+              <input
+                type="file"
+                accept="image/*"
+                className="hidden"
+                disabled={!clubHouseTablesReady}
+                onChange={(event) => {
+                  if (event.target.files?.[0]) {
+                    uploadImage(event.target.files[0], setForm, folder);
+                  }
+                }}
+              />
             </label>
           </div>
         </div>
 
         <label className="inline-flex items-center gap-2 text-sm text-foreground">
-          <input type="checkbox" checked={form.active} onChange={(event) => setForm((current) => ({ ...current, active: event.target.checked }))} />
+          <input
+            type="checkbox"
+            checked={form.active}
+            onChange={(event) => setForm((current) => ({ ...current, active: event.target.checked }))}
+          />
           Publish on the Tembo Private Club House page
         </label>
 
@@ -231,7 +290,8 @@ const AdminClubHouse = () => {
                 setForm(emptyForm);
               }
             }}
-            className="rounded-md bg-primary px-5 py-2 text-sm font-semibold text-primary-foreground"
+            disabled={!clubHouseTablesReady}
+            className="rounded-md bg-primary px-5 py-2 text-sm font-semibold text-primary-foreground disabled:cursor-not-allowed disabled:opacity-50"
           >
             {editingId ? "Update" : "Save"}
           </button>
@@ -277,13 +337,15 @@ const AdminClubHouse = () => {
                     setEditingId(item.id);
                     setForm(itemToForm(item));
                   }}
-                  className="rounded-md border border-border px-4 py-2 text-sm font-semibold text-foreground transition-colors hover:bg-secondary"
+                  disabled={!clubHouseTablesReady}
+                  className="rounded-md border border-border px-4 py-2 text-sm font-semibold text-foreground transition-colors hover:bg-secondary disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   Edit
                 </button>
                 <button
                   onClick={() => deleteItem(table, item.id)}
-                  className="rounded-md border border-destructive/30 px-4 py-2 text-sm font-semibold text-destructive transition-colors hover:bg-destructive/10"
+                  disabled={!clubHouseTablesReady}
+                  className="rounded-md border border-destructive/30 px-4 py-2 text-sm font-semibold text-destructive transition-colors hover:bg-destructive/10 disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   Delete
                 </button>
@@ -297,6 +359,12 @@ const AdminClubHouse = () => {
 
   return (
     <div className="space-y-6">
+      {!clubHouseTablesReady && (
+        <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 p-4 text-sm text-foreground">
+          Club House tables are still using fallback preview content in this environment. Editing and ratings moderation will unlock after the latest Supabase migrations are deployed.
+        </div>
+      )}
+
       {renderManager(
         "Club House Cocktails",
         "Add the cocktails that should appear on the Tembo Private Club House page.",
@@ -358,7 +426,8 @@ const AdminClubHouse = () => {
                   </div>
                   <button
                     onClick={() => toggleRatingPublished(rating.id, rating.published)}
-                    className="inline-flex items-center gap-2 rounded-md border border-border px-4 py-2 text-sm font-semibold text-foreground transition-colors hover:bg-secondary"
+                    disabled={!clubHouseTablesReady}
+                    className="inline-flex items-center gap-2 rounded-md border border-border px-4 py-2 text-sm font-semibold text-foreground transition-colors hover:bg-secondary disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     <Check size={16} />
                     {rating.published ? "Hide" : "Publish"}

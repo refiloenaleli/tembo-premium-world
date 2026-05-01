@@ -11,6 +11,8 @@ const AdminSettings = () => {
   const [whatsapp, setWhatsapp] = useState("");
   const [email, setEmail] = useState("");
   const [address, setAddress] = useState("");
+  const [clubHouseIntro, setClubHouseIntro] = useState("");
+  const [clubHouseMapUrl, setClubHouseMapUrl] = useState("");
   const [shopifyDomain, setShopifyDomain] = useState("");
   const [shopifyVariantMap, setShopifyVariantMap] = useState("{}");
   const [newAdminEmail, setNewAdminEmail] = useState("");
@@ -21,6 +23,8 @@ const AdminSettings = () => {
       setWhatsapp(settings.whatsapp_number || "");
       setEmail(settings.contact_email || "");
       setAddress(settings.club_house_address || "");
+      setClubHouseIntro(settings.club_house_intro || "");
+      setClubHouseMapUrl(settings.club_house_map_url || "");
       setShopifyDomain(settings.shopify_store_domain || "");
       setShopifyVariantMap(settings.shopify_variant_map || "{}");
     }
@@ -77,6 +81,20 @@ const AdminSettings = () => {
           <div className="flex gap-2">
             <input className="flex-1 bg-secondary border border-border text-foreground rounded px-3 py-2 text-sm" value={address} onChange={e => setAddress(e.target.value)} />
             <button onClick={() => saveSetting("club_house_address", address)} className="bg-primary text-primary-foreground px-4 py-2 rounded text-sm font-semibold">Save</button>
+          </div>
+        </div>
+        <div>
+          <label className="text-xs text-muted-foreground">Club House Intro</label>
+          <div className="flex gap-2">
+            <textarea className="flex-1 min-h-28 bg-secondary border border-border text-foreground rounded px-3 py-2 text-sm" value={clubHouseIntro} onChange={e => setClubHouseIntro(e.target.value)} />
+            <button onClick={() => saveSetting("club_house_intro", clubHouseIntro)} className="h-fit bg-primary text-primary-foreground px-4 py-2 rounded text-sm font-semibold">Save</button>
+          </div>
+        </div>
+        <div>
+          <label className="text-xs text-muted-foreground">Club House Map Link</label>
+          <div className="flex gap-2">
+            <input className="flex-1 bg-secondary border border-border text-foreground rounded px-3 py-2 text-sm" placeholder="https://maps.google.com/..." value={clubHouseMapUrl} onChange={e => setClubHouseMapUrl(e.target.value)} />
+            <button onClick={() => saveSetting("club_house_map_url", clubHouseMapUrl)} className="bg-primary text-primary-foreground px-4 py-2 rounded text-sm font-semibold">Save</button>
           </div>
         </div>
         <div>
