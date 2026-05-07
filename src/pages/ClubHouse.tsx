@@ -38,6 +38,55 @@ const renderStars = (rating: number) =>
     />
   ));
 
+const escapeSvg = (value: string) =>
+  value
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&apos;");
+
+const buildMenuPosterDataUrl = (title: string, description: string) => {
+  const wrappedLines = description
+    .split("\n")
+    .flatMap((line) => {
+      const chunks = line.match(/.{1,42}(\s|$)/g) ?? [line];
+      return chunks.map((chunk) => chunk.trim()).filter(Boolean);
+    })
+    .slice(0, 18);
+
+  const lineMarkup = wrappedLines
+    .map(
+      (line, index) =>
+        `<text x="72" y="${214 + index * 38}" fill="#F5E6D3" font-size="23" font-family="Georgia, serif">${escapeSvg(line)}</text>`,
+    )
+    .join("");
+
+  const svg = `
+    <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1600" viewBox="0 0 1200 1600">
+      <defs>
+        <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#0A0A0A" />
+          <stop offset="55%" stop-color="#1A120B" />
+          <stop offset="100%" stop-color="#2A1B3D" />
+        </linearGradient>
+        <radialGradient id="glow" cx="50%" cy="0%" r="70%">
+          <stop offset="0%" stop-color="#D4AF37" stop-opacity="0.48" />
+          <stop offset="100%" stop-color="#D4AF37" stop-opacity="0" />
+        </radialGradient>
+      </defs>
+      <rect width="1200" height="1600" fill="url(#bg)" />
+      <rect width="1200" height="1600" fill="url(#glow)" />
+      <rect x="48" y="48" width="1104" height="1504" rx="46" fill="rgba(255,255,255,0.06)" stroke="rgba(212,175,55,0.28)" />
+      <text x="72" y="112" fill="#D4AF37" font-size="28" letter-spacing="8" font-family="Arial, sans-serif">TEMBO MENU</text>
+      <text x="72" y="170" fill="#FFFFFF" font-size="56" font-family="Georgia, serif">${escapeSvg(title)}</text>
+      ${lineMarkup}
+    </svg>
+  `;
+
+  return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
+};
+
 const ClubHouse = () => {
   const { data: catalog, isLoading } = useClubHouseCatalog();
   const { data: ratings } = usePublishedClubHouseRatings();
@@ -263,28 +312,30 @@ const ClubHouse = () => {
         </div>
         {menus.length > 0 ? (
           <div className="grid gap-6 lg:grid-cols-2">
-            {menus.map((menu) => (
-              <article key={menu.id} className="overflow-hidden rounded-2xl border border-border bg-card">
-                <div className="border-b border-border bg-[radial-gradient(circle_at_top,_hsl(var(--primary)/0.32),_transparent_58%),linear-gradient(135deg,_hsl(var(--background)),_hsl(var(--secondary)/0.9))] px-5 py-8">
-                  <div className="rounded-2xl border border-primary/20 bg-background/40 px-5 py-6 shadow-[inset_0_1px_0_hsl(var(--background)/0.35)] backdrop-blur-sm">
-                    <p className="text-xs uppercase tracking-[0.35em] text-primary/80">Tembo Menu</p>
-                    <h3 className="mt-3 font-display text-3xl leading-tight text-primary sm:text-4xl">{menu.title}</h3>
+            {menus.map((menu) => {
+              const menuAssetUrl = menu.image_url || buildMenuPosterDataUrl(menu.title, menu.description || "Tembo private menu");
+
+              return (
+                <article key={menu.id} className="overflow-hidden rounded-2xl border border-border bg-card">
+                  <div className="border-b border-border bg-[radial-gradient(circle_at_top,_hsl(var(--primary)/0.32),_transparent_58%),linear-gradient(135deg,_hsl(var(--background)),_hsl(var(--secondary)/0.9))] px-5 py-8">
+                    <div className="rounded-2xl border border-primary/20 bg-background/40 px-5 py-6 shadow-[inset_0_1px_0_hsl(var(--background)/0.35)] backdrop-blur-sm">
+                      <p className="text-xs uppercase tracking-[0.35em] text-primary/80">Tembo Menu</p>
+                      <h3 className="mt-3 font-display text-3xl leading-tight text-primary sm:text-4xl">{menu.title}</h3>
+                    </div>
                   </div>
-                </div>
-                <div className="space-y-5 p-5">
-                  <p className="whitespace-pre-line text-sm leading-6 text-muted-foreground">
-                    {menu.description || "Description coming soon."}
-                  </p>
-                  {menu.image_url ? (
+                  <div className="space-y-5 p-5">
+                    <p className="whitespace-pre-line text-sm leading-6 text-muted-foreground">
+                      {menu.description || "Description coming soon."}
+                    </p>
                     <div className="grid gap-5 rounded-2xl border border-border bg-secondary/20 p-4 md:grid-cols-[1.2fr_0.8fr]">
                       <a
-                        href={menu.image_url}
+                        href={menuAssetUrl}
                         target="_blank"
                         rel="noreferrer"
                         className="overflow-hidden rounded-2xl border border-primary/15 bg-background"
                       >
                         <img
-                          src={menu.image_url}
+                          src={menuAssetUrl}
                           alt={`${menu.title} menu`}
                           className="h-full max-h-[30rem] w-full object-cover"
                           loading="lazy"
@@ -297,10 +348,10 @@ const ClubHouse = () => {
                           </div>
                           <p className="text-sm font-semibold text-foreground">Scan to download the menu</p>
                           <p className="mt-2 text-xs leading-5 text-muted-foreground">
-                            The QR code always points to the current menu image saved by the admin.
+                            The QR code points to the current menu image. If no upload exists yet, Tembo shows a premium generated menu card.
                           </p>
                           <img
-                            src={buildMenuQrUrl(menu.image_url)}
+                            src={buildMenuQrUrl(menuAssetUrl)}
                             alt={`QR code for ${menu.title}`}
                             className="mx-auto mt-4 h-40 w-40 rounded-2xl border border-border bg-white p-2"
                             loading="lazy"
@@ -308,7 +359,7 @@ const ClubHouse = () => {
                         </div>
                         <div className="flex flex-wrap gap-3">
                           <a
-                            href={menu.image_url}
+                            href={menuAssetUrl}
                             target="_blank"
                             rel="noreferrer"
                             className="inline-flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground"
@@ -316,7 +367,7 @@ const ClubHouse = () => {
                             Open Menu <ExternalLink size={16} />
                           </a>
                           <a
-                            href={menu.image_url}
+                            href={menuAssetUrl}
                             download
                             className="inline-flex items-center gap-2 rounded-full border border-border px-4 py-2 text-sm font-semibold text-foreground transition-colors hover:border-primary"
                           >
@@ -325,14 +376,10 @@ const ClubHouse = () => {
                         </div>
                       </div>
                     </div>
-                  ) : (
-                    <div className="rounded-2xl border border-dashed border-border p-4 text-sm text-muted-foreground">
-                      Add a menu image in admin to show the downloadable QR code here.
-                    </div>
-                  )}
-                </div>
-              </article>
-            ))}
+                  </div>
+                </article>
+              );
+            })}
           </div>
         ) : (
           <p className="rounded-xl border border-dashed border-border p-6 text-muted-foreground">

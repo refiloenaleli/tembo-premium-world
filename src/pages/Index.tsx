@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { ArrowRight, Award, Beaker, Leaf, MapPin } from "lucide-react";
+import { ArrowRight, Award, Beaker, Facebook, Instagram, Leaf, MapPin } from "lucide-react";
 import ProductCard from "@/components/ProductCard";
 import HeroCarousel from "@/components/HeroCarousel";
 import awardPlaceholder from "@/assets/award-placeholder.jpg";
@@ -17,34 +17,45 @@ const Index = () => {
   const { data: settings } = useSiteSettings();
   const featured = (products ?? []).filter((product) => product.featured).slice(0, 4);
   const socialLinks = [
-    { label: "Facebook", href: settings?.facebook_url },
-    { label: "X", href: settings?.x_url },
-    { label: "Instagram", href: settings?.instagram_url },
-    { label: "TikTok", href: settings?.tiktok_url },
-  ].filter((item) => item.href);
+    { label: "Facebook", href: settings?.facebook_url, icon: Facebook },
+    { label: "X", href: settings?.x_url, icon: null },
+    { label: "Instagram", href: settings?.instagram_url, icon: Instagram },
+    { label: "TikTok", href: settings?.tiktok_url, icon: null },
+  ];
 
   return (
     <div className="pt-16">
       <section className="relative overflow-hidden border-b border-border bg-secondary">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(212,173,72,0.18),_transparent_45%)]" />
         <div className="container relative mx-auto px-4 py-14">
-          {socialLinks.length > 0 && (
-            <div className="mb-8 flex justify-center md:justify-end">
-              <div className="flex flex-wrap items-center gap-2 rounded-full border border-primary/20 bg-background/70 px-3 py-2 backdrop-blur-sm">
-                {socialLinks.map((item) => (
+          <div className="mb-8 flex justify-center md:justify-end">
+            <div className="flex flex-wrap items-center gap-2 rounded-[1.5rem] border border-primary/20 bg-background/70 px-3 py-2 backdrop-blur-sm">
+              {socialLinks.map((item) => {
+                const Icon = item.icon;
+
+                return item.href ? (
                   <a
                     key={item.label}
                     href={item.href}
                     target="_blank"
                     rel="noreferrer"
-                    className="rounded-full border border-border px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.24em] text-foreground transition-colors hover:border-primary hover:text-primary"
+                    className="inline-flex items-center gap-2 rounded-full border border-border px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.24em] text-foreground transition-colors hover:border-primary hover:text-primary"
                   >
+                    {Icon ? <Icon size={13} /> : <span className="text-[12px] font-bold">{item.label === "X" ? "X" : "T"}</span>}
                     {item.label}
                   </a>
-                ))}
-              </div>
+                ) : (
+                  <span
+                    key={item.label}
+                    className="inline-flex items-center gap-2 rounded-full border border-border/60 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.24em] text-muted-foreground"
+                  >
+                    {Icon ? <Icon size={13} /> : <span className="text-[12px] font-bold">{item.label === "X" ? "X" : "T"}</span>}
+                    {item.label}
+                  </span>
+                );
+              })}
             </div>
-          )}
+          </div>
           <div className="flex flex-col items-center gap-6 text-center">
             <img
               src="/images/misc/tembo-logo.jpg"

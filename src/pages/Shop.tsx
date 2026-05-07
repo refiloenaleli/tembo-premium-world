@@ -7,6 +7,78 @@ import { useCart } from "@/context/CartContext";
 import { useRegion } from "@/context/RegionContext";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 
+type FallbackGalleryItem = {
+  id: string;
+  image_url: string;
+  cocktail_name: string;
+  caption: string;
+};
+
+const createGalleryCardDataUrl = (productName: string, cocktailName: string, caption: string) => {
+  const svg = `
+    <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="900" viewBox="0 0 1200 900">
+      <defs>
+        <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#0A0A0A" />
+          <stop offset="45%" stop-color="#1A120B" />
+          <stop offset="100%" stop-color="#2A1B3D" />
+        </linearGradient>
+        <radialGradient id="glow" cx="20%" cy="10%" r="90%">
+          <stop offset="0%" stop-color="#D4AF37" stop-opacity="0.5" />
+          <stop offset="100%" stop-color="#D4AF37" stop-opacity="0" />
+        </radialGradient>
+      </defs>
+      <rect width="1200" height="900" fill="url(#bg)" />
+      <rect width="1200" height="900" fill="url(#glow)" />
+      <rect x="48" y="48" width="1104" height="804" rx="36" fill="rgba(255,255,255,0.06)" stroke="rgba(212,175,55,0.26)" />
+      <text x="84" y="120" fill="#D4AF37" font-size="26" letter-spacing="7" font-family="Arial, sans-serif">TEMBO SIGNATURE SERVE</text>
+      <text x="84" y="215" fill="#FFFFFF" font-size="60" font-family="Georgia, serif">${productName}</text>
+      <text x="84" y="315" fill="#F5E6D3" font-size="54" font-family="Georgia, serif">${cocktailName}</text>
+      <text x="84" y="415" fill="#F8D7E3" font-size="30" font-family="Arial, sans-serif">${caption}</text>
+    </svg>
+  `;
+
+  return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
+};
+
+const fallbackGalleryBySlug: Record<string, Array<{ cocktail_name: string; caption: string }>> = {
+  "watermelon-gin": [
+    { cocktail_name: "Watermelon Sunset Spritz", caption: "A bright chilled serve with tonic, mint, and sunset citrus." },
+    { cocktail_name: "Tembo Pink Fizz", caption: "Fresh bubbles, soft fruit, and a polished rose-gold finish." },
+    { cocktail_name: "Summer Terrace Pour", caption: "A clean premium pour designed for long warm evenings." },
+  ],
+  "tropical-gin": [
+    { cocktail_name: "Tropical Gold Collins", caption: "Botanicals, citrus, and a light sparkling lift." },
+    { cocktail_name: "Island Bloom", caption: "A softer fruit-led serve with a luxurious aromatic profile." },
+    { cocktail_name: "Tembo Palm Cooler", caption: "A refreshing premium mixed drink with sunny depth." },
+  ],
+  "soulicto-gin": [
+    { cocktail_name: "Soulcito Star Martini", caption: "Silky texture with a bold, elegant finish." },
+    { cocktail_name: "Midnight Gold Pour", caption: "A darker, moodier signature serve for evening hosting." },
+    { cocktail_name: "Tembo Velvet Tonic", caption: "Minimal, refined, and built around clean character." },
+  ],
+  ginsky: [
+    { cocktail_name: "Ginsky Legacy Sour", caption: "An expressive fusion serve with smooth layered warmth." },
+    { cocktail_name: "Club House Old Fashioned", caption: "A richer cocktail built for slower premium sipping." },
+    { cocktail_name: "Tembo Ember Highball", caption: "A crisp long drink with polished spice and lift." },
+  ],
+  "funga-caramel-brandy": [
+    { cocktail_name: "Caramel Velvet", caption: "A warm dessert-style pour with smooth Tembo richness." },
+    { cocktail_name: "Fireside Reserve", caption: "A darker celebratory serve with subtle golden sweetness." },
+    { cocktail_name: "Tembo Nightcap", caption: "A luxurious end-of-evening brandy ritual." },
+  ],
+  "mshale-caramel-vodka": [
+    { cocktail_name: "Caramel Espresso Tembo", caption: "A sleek after-dinner serve with bold roasted notes." },
+    { cocktail_name: "Mshale Silk Martini", caption: "A smooth premium cocktail with soft caramel depth." },
+    { cocktail_name: "Golden Cream Pour", caption: "An indulgent, lounge-ready signature serve." },
+  ],
+  "risasi-vanilla-whisky": [
+    { cocktail_name: "Highveld Vanilla Sour", caption: "Fresh citrus and vanilla warmth in a refined whisky serve." },
+    { cocktail_name: "Risasi Gold Highball", caption: "Clean lift, elegant spice, and a long luxurious finish." },
+    { cocktail_name: "Tembo Reserve Night", caption: "A richer whisky experience designed for slow sipping." },
+  ],
+};
+
 const Shop = () => {
   const [category, setCategory] = useState("all");
   const [search, setSearch] = useState("");
@@ -39,7 +111,28 @@ const Shop = () => {
     toast.success(`${product.name} (${size === "full" ? "750ml" : "50ml"}) added to cart`);
   };
 
-  const selectedGallery = selectedProduct ? (galleryByProduct.get(selectedProduct.id) ?? []) : [];
+  const getGalleryItems = (product: DbProduct) => {
+    const galleryItems = galleryByProduct.get(product.id) ?? [];
+
+    if (galleryItems.length > 0) {
+      return galleryItems;
+    }
+
+    const fallbackEntries = fallbackGalleryBySlug[product.slug] ?? [
+      { cocktail_name: `${product.name} Signature Serve`, caption: "A premium Tembo presentation while gallery photos are being prepared." },
+      { cocktail_name: `${product.name} House Cocktail`, caption: "A refined club-style serve built around this bottle." },
+      { cocktail_name: `${product.name} Celebration Pour`, caption: "An elegant signature pour for premium occasions." },
+    ];
+
+    return fallbackEntries.map((entry, index) => ({
+      id: `${product.slug}-fallback-${index}`,
+      image_url: createGalleryCardDataUrl(product.name, entry.cocktail_name, entry.caption),
+      cocktail_name: entry.cocktail_name,
+      caption: entry.caption,
+    })) as Array<ProductGalleryAsset | FallbackGalleryItem>;
+  };
+
+  const selectedGallery = selectedProduct ? getGalleryItems(selectedProduct) : [];
 
   return (
     <div className="pt-16">
@@ -85,7 +178,7 @@ const Shop = () => {
             <p className="mb-6 text-sm text-muted-foreground">{filtered.length} spirits found</p>
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
               {filtered.map((product) => {
-                const galleryCount = (galleryByProduct.get(product.id) ?? []).length;
+                const galleryCount = getGalleryItems(product).length;
 
                 return (
                   <div key={product.id} className="group overflow-hidden rounded-2xl border border-border bg-card transition-all duration-300 hover:border-primary/50 hover:shadow-gold">
