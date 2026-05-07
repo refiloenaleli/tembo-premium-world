@@ -1,13 +1,21 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { ChevronLeft, ChevronRight, Volume2, VolumeX } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
+import { ChevronLeft, ChevronRight, Volume2, VolumeX } from "lucide-react";
 
 type StorySlide = {
   id: string;
+  eyebrow: string;
   title: string;
   text: string;
   imageSrc: string;
-  eyebrow: string;
+  mood: string;
+  accent: string;
+  glow: string;
+  panelTone: string;
+  detail: string;
+  statLabel: string;
+  statValue: string;
+  videoSrc?: string | null;
 };
 
 type WorldCard = {
@@ -38,132 +46,136 @@ const storySlides: StorySlide[] = [
     id: "origin",
     eyebrow: "Origin",
     title: "From the heart of Africa",
-    text: "A calm beginning shaped by place, memory, and the quiet confidence of a premium African spirit.",
+    text: "Tembo begins with atmosphere before it becomes a bottle. Place, memory, and African presence shape the first impression long before the first pour.",
     imageSrc: aboutImageOrigin,
+    mood: "Light, airy, elegant",
+    accent: "#F5E6D3",
+    glow: "rgba(245, 230, 211, 0.42)",
+    panelTone: "rgba(255,255,255,0.10)",
+    detail: "Soft mist, pale gold light, and the quiet silhouette of strength.",
+    statLabel: "Origin",
+    statValue: "Rooted",
   },
   {
     id: "craft",
     eyebrow: "Craft",
     title: "Crafted with depth, tradition, and bold character",
-    text: "Every expression carries patience, layered texture, and a deliberate finish that feels both modern and rooted.",
+    text: "Each expression carries patience and deliberate structure, balancing modern refinement with a legacy of strong, memorable flavour.",
     imageSrc: aboutImageCraft,
+    mood: "Fluid, warm, textural",
+    accent: "#C9A45C",
+    glow: "rgba(201, 164, 92, 0.45)",
+    panelTone: "rgba(255,255,255,0.09)",
+    detail: "Golden movement, slow richness, and a sense of precision without excess.",
+    statLabel: "Craft",
+    statValue: "Layered",
   },
   {
     id: "tembo",
     eyebrow: "Tembo",
-    title: "Tembo - strength, memory, legacy",
-    text: "The elephant becomes a symbol of dignity and presence, guiding the brand with power that never needs to shout.",
+    title: "Tembo — strength, memory, legacy",
+    text: "The elephant is not decoration. It is presence, dignity, and lasting memory translated into a premium African identity that moves with confidence.",
     imageSrc: aboutImageTembo,
+    mood: "Powerful, sculptural, calm",
+    accent: "#D4AF37",
+    glow: "rgba(212, 175, 55, 0.45)",
+    panelTone: "rgba(255,255,255,0.08)",
+    detail: "A quiet symbol of endurance, legacy, and unmistakable brand gravity.",
+    statLabel: "Tembo",
+    statValue: "Legacy",
   },
   {
     id: "culture",
     eyebrow: "Culture",
     title: "Rooted in African excellence",
-    text: "Tembo speaks through texture, hospitality, and heritage, celebrating a continent that defines luxury on its own terms.",
+    text: "Tembo honours African hospitality, style, and ambition with restraint. The language is premium, but the soul remains deeply connected to where it comes from.",
     imageSrc: aboutImageCulture,
+    mood: "Textured, grounded, elevated",
+    accent: "#8B5E3C",
+    glow: "rgba(139, 94, 60, 0.42)",
+    panelTone: "rgba(255,255,255,0.08)",
+    detail: "Subtle cultural texture, bronze warmth, and a confident sense of belonging.",
+    statLabel: "Culture",
+    statValue: "African",
   },
   {
     id: "luxury",
     eyebrow: "Luxury",
     title: "Refined for those who understand taste",
-    text: "Soft gold light, minimal composition, and a measured sense of ceremony create an atmosphere of cinematic restraint.",
+    text: "Luxury here is cinematic and controlled. Soft reflections, gold atmosphere, and polished restraint make the experience feel composed rather than loud.",
     imageSrc: aboutImageLuxury,
+    mood: "Polished, glowing, modern",
+    accent: "#F8D7E3",
+    glow: "rgba(248, 215, 227, 0.36)",
+    panelTone: "rgba(255,255,255,0.11)",
+    detail: "Light flares, premium edges, and warmth designed to feel intimate.",
+    statLabel: "Luxury",
+    statValue: "Refined",
   },
   {
     id: "identity",
     eyebrow: "Identity",
     title: "Tembo Premium",
-    text: "A signature identity shaped for modern palates, memorable occasions, and a global audience drawn to calm, powerful design.",
+    text: "A living luxury African brand with a strong visual signature, built for contemporary drinkers who respond to story, mood, and unmistakable identity.",
     imageSrc: aboutImageIdentity,
+    mood: "Bold, clean, iconic",
+    accent: "#FFFFFF",
+    glow: "rgba(212, 175, 55, 0.34)",
+    panelTone: "rgba(255,255,255,0.08)",
+    detail: "A final frame that feels decisive, elegant, and fully Tembo.",
+    statLabel: "Identity",
+    statValue: "Tembo",
   },
 ];
 
 const worldCards: WorldCard[] = [
-  {
-    id: "world-1",
-    imageSrc: customerImage1,
-    country: "Lesotho",
-    quote: "A bottle that feels ceremonial before the first sip.",
-  },
-  {
-    id: "world-2",
-    imageSrc: customerImage2,
-    country: "South Africa",
-    quote: "Tembo carries warmth, polish, and a strong sense of place.",
-  },
-  {
-    id: "world-3",
-    imageSrc: customerImage3,
-    country: "Kenya",
-    quote: "Elegant enough for a celebration, relaxed enough for the afterglow.",
-  },
-  {
-    id: "world-4",
-    imageSrc: customerImage4,
-    country: "Nigeria",
-    quote: "You feel the confidence of the brand in every detail.",
-  },
-  {
-    id: "world-5",
-    imageSrc: customerImage5,
-    country: "Ghana",
-    quote: "Smooth, memorable, and beautifully presented from start to finish.",
-  },
-  {
-    id: "world-6",
-    imageSrc: customerImage6,
-    country: "Botswana",
-    quote: "The experience feels intimate, premium, and unmistakably African.",
-  },
-  {
-    id: "world-7",
-    imageSrc: customerImage7,
-    country: "Namibia",
-    quote: "A luxury mood that stays with you long after the evening ends.",
-  },
-  {
-    id: "world-8",
-    imageSrc: customerImage8,
-    country: "Rwanda",
-    quote: "Sophisticated storytelling in a bottle.",
-  },
+  { id: "world-1", imageSrc: customerImage1, country: "Lesotho", quote: "Tembo feels ceremonial before the first sip." },
+  { id: "world-2", imageSrc: customerImage2, country: "South Africa", quote: "The brand carries warmth, polish, and presence." },
+  { id: "world-3", imageSrc: customerImage3, country: "Kenya", quote: "Elegant enough for celebration, calm enough for afterglow." },
+  { id: "world-4", imageSrc: customerImage4, country: "Nigeria", quote: "Every detail feels intentional and premium." },
+  { id: "world-5", imageSrc: customerImage5, country: "Ghana", quote: "Smooth, memorable, and beautifully presented." },
+  { id: "world-6", imageSrc: customerImage6, country: "Botswana", quote: "A luxury mood that still feels personal." },
+  { id: "world-7", imageSrc: customerImage7, country: "Namibia", quote: "The atmosphere stays with you after the evening ends." },
+  { id: "world-8", imageSrc: customerImage8, country: "Rwanda", quote: "A bottle with storytelling built into it." },
 ];
 
 const createAmbientController = async () => {
-  const AudioContextClass = window.AudioContext || (window as typeof window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+  const AudioContextClass =
+    window.AudioContext ||
+    (window as typeof window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+
   if (!AudioContextClass) return null;
 
   const context = new AudioContextClass();
   const master = context.createGain();
-  master.gain.value = 0.035;
+  master.gain.value = 0.03;
   master.connect(context.destination);
 
-  const oscillators = [196, 246.94, 293.66].map((frequency, index) => {
+  const tones = [174.61, 220, 261.63].map((frequency, index) => {
     const oscillator = context.createOscillator();
     const gain = context.createGain();
     oscillator.type = index === 1 ? "triangle" : "sine";
     oscillator.frequency.value = frequency;
-    gain.gain.value = index === 1 ? 0.01 : 0.006;
+    gain.gain.value = index === 1 ? 0.008 : 0.005;
     oscillator.connect(gain);
     gain.connect(master);
 
     const lfo = context.createOscillator();
     const lfoGain = context.createGain();
-    lfo.frequency.value = 0.08 + index * 0.03;
-    lfoGain.gain.value = index === 1 ? 0.006 : 0.004;
+    lfo.frequency.value = 0.06 + index * 0.02;
+    lfoGain.gain.value = index === 1 ? 0.006 : 0.0035;
     lfo.connect(lfoGain);
     lfoGain.connect(gain.gain);
 
     oscillator.start();
     lfo.start();
 
-    return { oscillator, gain, lfo };
+    return { oscillator, lfo };
   });
 
   return {
-    context,
     stop() {
-      oscillators.forEach(({ oscillator, lfo }) => {
+      tones.forEach(({ oscillator, lfo }) => {
         oscillator.stop();
         lfo.stop();
       });
@@ -207,6 +219,15 @@ const AboutExperience = () => {
 
   const activeSlide = storySlides[activeIndex];
 
+  const slideStyle = useMemo(
+    () => ({
+      transform: reducedMotion
+        ? "none"
+        : `translate3d(${parallax.x * 0.45}px, ${parallax.y * 0.45}px, 0) scale(1.04)`,
+    }),
+    [parallax.x, parallax.y, reducedMotion],
+  );
+
   const goToSlide = (nextIndex: number) => {
     const max = storySlides.length - 1;
     if (nextIndex < 0) {
@@ -234,15 +255,6 @@ const AboutExperience = () => {
     setSoundEnabled(true);
   };
 
-  const slideStyle = useMemo(
-    () => ({
-      transform: reducedMotion
-        ? "none"
-        : `translate3d(${parallax.x * 0.5}px, ${parallax.y * 0.5}px, 0) scale(1.03)`,
-    }),
-    [parallax.x, parallax.y, reducedMotion],
-  );
-
   return (
     <div className="min-h-screen bg-background pt-16">
       <section
@@ -250,8 +262,8 @@ const AboutExperience = () => {
         onMouseMove={(event) => {
           if (reducedMotion) return;
           const bounds = event.currentTarget.getBoundingClientRect();
-          const x = ((event.clientX - bounds.left) / bounds.width - 0.5) * 24;
-          const y = ((event.clientY - bounds.top) / bounds.height - 0.5) * 18;
+          const x = ((event.clientX - bounds.left) / bounds.width - 0.5) * 26;
+          const y = ((event.clientY - bounds.top) / bounds.height - 0.5) * 20;
           setParallax({ x, y });
         }}
         onMouseLeave={() => setParallax({ x: 0, y: 0 })}
@@ -260,33 +272,53 @@ const AboutExperience = () => {
           const endX = event.changedTouches[0]?.clientX;
           if (touchStartX === null || typeof endX !== "number") return;
           const delta = endX - touchStartX;
-          if (Math.abs(delta) > 40) {
+          if (Math.abs(delta) > 36) {
             goToSlide(delta < 0 ? activeIndex + 1 : activeIndex - 1);
           }
           setTouchStartX(null);
         }}
       >
-        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(7,7,7,0.28),rgba(7,7,7,0.72))]" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(212,175,55,0.24),transparent_32%),radial-gradient(circle_at_80%_20%,rgba(248,215,227,0.18),transparent_22%),radial-gradient(circle_at_bottom,rgba(139,94,60,0.26),transparent_35%)]" />
+        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(10,10,10,0.22),rgba(10,10,10,0.74))]" />
+        <motion.div
+          className="absolute inset-0"
+          animate={{
+            background: [
+              `radial-gradient(circle at 12% 15%, ${activeSlide.glow}, transparent 28%), radial-gradient(circle at 85% 18%, rgba(248,215,227,0.12), transparent 22%), radial-gradient(circle at bottom, rgba(139,94,60,0.20), transparent 34%)`,
+            ],
+          }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+        />
 
         <div className="relative min-h-[calc(100vh-4rem)]">
           <AnimatePresence mode="wait">
             <motion.div
               key={activeSlide.id}
-              initial={{ opacity: 0, x: reducedMotion ? 0 : 28 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: reducedMotion ? 0 : -28 }}
-              transition={{ duration: 0.8, ease: "easeOut" }}
+              initial={{ opacity: 0, scale: reducedMotion ? 1 : 1.02 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: reducedMotion ? 1 : 0.99 }}
+              transition={{ duration: 0.9, ease: "easeOut" }}
               className="absolute inset-0"
             >
-              <img
-                src={activeSlide.imageSrc}
-                alt={activeSlide.title}
-                loading="eager"
-                className="h-full w-full object-cover transition-transform duration-1000"
-                style={slideStyle}
-              />
-              <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(10,10,10,0.78),rgba(10,10,10,0.28),rgba(10,10,10,0.58))]" />
+              {activeSlide.videoSrc && activeSlide.id === storySlides[activeIndex].id ? (
+                <video
+                  src={activeSlide.videoSrc}
+                  className="h-full w-full object-cover"
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  preload="metadata"
+                />
+              ) : (
+                <img
+                  src={activeSlide.imageSrc}
+                  alt={activeSlide.title}
+                  loading="eager"
+                  className="h-full w-full object-cover transition-transform duration-1000"
+                  style={slideStyle}
+                />
+              )}
+              <div className="absolute inset-0 bg-[linear-gradient(95deg,rgba(10,10,10,0.84),rgba(10,10,10,0.30),rgba(10,10,10,0.64))]" />
             </motion.div>
           </AnimatePresence>
 
@@ -305,20 +337,26 @@ const AboutExperience = () => {
               </button>
             </div>
 
-            <div className="grid items-end gap-8 pb-10 pt-8 lg:grid-cols-[1.15fr_0.85fr]">
+            <div className="grid items-end gap-8 pb-10 pt-8 lg:grid-cols-[1.12fr_0.88fr]">
               <div className="max-w-3xl">
                 <AnimatePresence mode="wait">
                   <motion.div
                     key={`${activeSlide.id}-copy`}
-                    initial={{ opacity: 0, y: reducedMotion ? 0 : 22 }}
+                    initial={{ opacity: 0, y: reducedMotion ? 0 : 26 }}
                     animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: reducedMotion ? 0 : -16 }}
+                    exit={{ opacity: 0, y: reducedMotion ? 0 : -18 }}
                     transition={{ duration: 0.7, ease: "easeOut" }}
                   >
-                    <div className="inline-flex rounded-full border border-white/15 bg-white/10 px-4 py-2 text-xs uppercase tracking-[0.3em] text-[#F5E6D3] backdrop-blur-xl">
+                    <div
+                      className="inline-flex rounded-full border border-white/15 px-4 py-2 text-xs uppercase tracking-[0.32em] backdrop-blur-xl"
+                      style={{ color: activeSlide.accent, background: activeSlide.panelTone }}
+                    >
                       {activeSlide.eyebrow}
                     </div>
-                    <div className={`mt-6 max-w-3xl rounded-[2rem] border border-white/12 bg-white/10 p-6 shadow-[0_24px_90px_rgba(0,0,0,0.28)] backdrop-blur-2xl sm:p-8 ${reducedMotion ? "" : "transition-all duration-700"}`}>
+                    <div
+                      className="mt-6 max-w-3xl rounded-[2rem] border border-white/12 p-6 shadow-[0_24px_90px_rgba(0,0,0,0.30)] backdrop-blur-2xl sm:p-8"
+                      style={{ background: activeSlide.panelTone, boxShadow: `0 0 80px ${activeSlide.glow}` }}
+                    >
                       <h1 className="max-w-2xl font-display text-4xl leading-tight text-white sm:text-5xl lg:text-7xl">
                         {activeSlide.title}
                       </h1>
@@ -331,12 +369,28 @@ const AboutExperience = () => {
               </div>
 
               <div className="grid gap-4">
-                <div className="rounded-[1.75rem] border border-white/12 bg-black/20 p-5 text-white/85 shadow-[0_18px_70px_rgba(0,0,0,0.22)] backdrop-blur-xl">
-                  <p className="text-xs uppercase tracking-[0.3em] text-[#C9A45C]">Brand Direction</p>
-                  <p className="mt-4 text-sm leading-7 text-white/70">
-                    Calm, cinematic, and rooted in African identity. Each slide is designed to feel light on clutter and rich in atmosphere.
+                <motion.div
+                  key={`${activeSlide.id}-detail`}
+                  initial={{ opacity: 0, y: reducedMotion ? 0 : 18 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.75, ease: "easeOut" }}
+                  className="rounded-[1.75rem] border border-white/12 bg-black/20 p-5 text-white/85 shadow-[0_18px_70px_rgba(0,0,0,0.24)] backdrop-blur-xl"
+                >
+                  <p className="text-xs uppercase tracking-[0.3em]" style={{ color: activeSlide.accent }}>
+                    Visual Direction
                   </p>
-                </div>
+                  <p className="mt-4 text-sm leading-7 text-white/70">{activeSlide.detail}</p>
+                  <div className="mt-5 grid gap-3 sm:grid-cols-2">
+                    <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+                      <p className="text-[11px] uppercase tracking-[0.24em] text-white/55">{activeSlide.statLabel}</p>
+                      <p className="mt-2 font-display text-2xl text-white">{activeSlide.statValue}</p>
+                    </div>
+                    <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+                      <p className="text-[11px] uppercase tracking-[0.24em] text-white/55">Mood</p>
+                      <p className="mt-2 text-sm leading-6 text-white/80">{activeSlide.mood}</p>
+                    </div>
+                  </div>
+                </motion.div>
 
                 <div className="flex flex-wrap items-center gap-3">
                   <button
@@ -359,9 +413,11 @@ const AboutExperience = () => {
 
             <div className="space-y-4 pb-4">
               <div className="h-[2px] overflow-hidden rounded-full bg-white/15">
-                <div
-                  className="h-full rounded-full bg-[#D4AF37] transition-all duration-500"
-                  style={{ width: `${((activeIndex + 1) / storySlides.length) * 100}%` }}
+                <motion.div
+                  className="h-full rounded-full"
+                  style={{ backgroundColor: activeSlide.accent }}
+                  animate={{ width: `${((activeIndex + 1) / storySlides.length) * 100}%` }}
+                  transition={{ duration: 0.5, ease: "easeOut" }}
                 />
               </div>
               <div className="flex flex-wrap items-center gap-2">
@@ -370,7 +426,8 @@ const AboutExperience = () => {
                     key={slide.id}
                     type="button"
                     onClick={() => setActiveIndex(index)}
-                    className={`h-3 rounded-full transition-all duration-300 ${index === activeIndex ? "w-10 bg-[#D4AF37]" : "w-3 bg-white/45 hover:bg-white/70"}`}
+                    className={`h-3 rounded-full transition-all duration-300 ${index === activeIndex ? "w-12" : "w-3 bg-white/45 hover:bg-white/70"}`}
+                    style={index === activeIndex ? { backgroundColor: slide.accent } : undefined}
                     aria-label={`Go to ${slide.eyebrow}`}
                   />
                 ))}
@@ -380,14 +437,16 @@ const AboutExperience = () => {
         </div>
       </section>
 
-      <section className="relative overflow-hidden bg-[radial-gradient(circle_at_top,rgba(201,164,92,0.12),transparent_30%),linear-gradient(180deg,rgba(245,230,211,0.12),transparent_18%),linear-gradient(180deg,hsl(var(--background)),hsl(var(--background)))] py-20">
+      <section className="relative overflow-hidden bg-[radial-gradient(circle_at_top,rgba(201,164,92,0.14),transparent_30%),linear-gradient(180deg,rgba(245,230,211,0.10),transparent_18%),linear-gradient(180deg,hsl(var(--background)),hsl(var(--background)))] py-20">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="mb-8 flex items-end justify-between gap-6">
             <div className="max-w-2xl">
               <p className="text-xs uppercase tracking-[0.3em] text-primary">Tembo Around The World</p>
-              <h2 className="mt-3 font-display text-4xl text-foreground sm:text-5xl">Customers carrying the story forward</h2>
+              <h2 className="mt-3 font-display text-4xl text-foreground sm:text-5xl">
+                Customers carrying the story forward
+              </h2>
               <p className="mt-4 text-sm leading-7 text-muted-foreground">
-                A warm, global view of how Tembo shows up in real moments, refined settings, and shared celebrations.
+                A warmer horizontal story of where Tembo lands: celebrations, portraits, and premium moments across the continent.
               </p>
             </div>
             <div className="hidden gap-3 sm:flex">
@@ -415,16 +474,16 @@ const AboutExperience = () => {
             {worldCards.map((card) => (
               <article
                 key={card.id}
-                className="group min-w-[280px] max-w-[280px] snap-start overflow-hidden rounded-[1.75rem] border border-border bg-card shadow-[0_18px_48px_rgba(0,0,0,0.08)] transition-all duration-300 hover:-translate-y-1 hover:border-primary/50"
+                className="group min-w-[285px] max-w-[285px] snap-start overflow-hidden rounded-[1.85rem] border border-border bg-card shadow-[0_22px_54px_rgba(0,0,0,0.10)] transition-all duration-300 hover:-translate-y-1 hover:border-primary/50"
               >
-                <div className="relative h-[360px] overflow-hidden bg-secondary">
+                <div className="relative h-[380px] overflow-hidden bg-secondary">
                   <img
                     src={card.imageSrc}
                     alt={card.country}
                     loading="lazy"
                     className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-transparent to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
                   <div className="absolute bottom-5 left-5 rounded-full border border-white/20 bg-white/10 px-3 py-1 text-[11px] uppercase tracking-[0.24em] text-white backdrop-blur-xl">
                     {card.country}
                   </div>
