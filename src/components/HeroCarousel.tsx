@@ -3,10 +3,12 @@ import { useHeroBanners } from "@/hooks/useHeroBanners";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useRegion } from "@/context/RegionContext";
+import { useSeasonalTheme } from "@/context/SeasonalThemeContext";
 
 const HeroCarousel = () => {
   const { data: banners, isLoading } = useHeroBanners();
   const { region } = useRegion();
+  const { effectiveTheme, isMobileEffectsReduced } = useSeasonalTheme();
   const [current, setCurrent] = useState(0);
 
   // Use only real banners from Supabase. No fallback to Lovable images.
@@ -86,11 +88,26 @@ const HeroCarousel = () => {
             className="w-full h-full object-cover" 
           />
           <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/50 to-transparent" />
+          {effectiveTheme?.banner_image_url && !isMobileEffectsReduced && i === current && (
+            <img
+              src={effectiveTheme.banner_image_url}
+              alt={effectiveTheme.name}
+              loading="lazy"
+              className="absolute right-0 top-0 h-full max-w-[42%] object-cover opacity-20 mix-blend-screen"
+            />
+          )}
         </div>
       ))}
 
       {/* Content */}
       <div className="container mx-auto px-4 relative z-10">
+        {effectiveTheme?.promo_message && (
+          <div className="mb-6 inline-flex max-w-xl rounded-full border border-white/10 bg-white/10 px-4 py-2 backdrop-blur-xl">
+            <p className="text-xs uppercase tracking-[0.26em] text-white/85">
+              {effectiveTheme.name}
+            </p>
+          </div>
+        )}
         <p className="text-xs uppercase tracking-[0.3em] text-primary mb-4">Tembo Premium Spirits</p>
         
         <h1 className="font-display text-2xl sm:text-4xl md:text-7xl font-bold text-white mb-4 max-w-3xl leading-tight">

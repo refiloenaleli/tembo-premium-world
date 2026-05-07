@@ -51,6 +51,11 @@
 
     --font-display: 'Playfair Display', Georgia, serif;
     --font-body: 'Raleway', Arial, sans-serif;
+
+    --seasonal-accent: transparent;
+    --seasonal-glow: transparent;
+    --seasonal-gradient: linear-gradient(135deg, rgba(201,164,92,0.0), rgba(10,10,10,0));
+    --seasonal-overlay-opacity: 0;
   }
 
   .light {
@@ -94,6 +99,7 @@
   body {
     @apply bg-background text-foreground;
     font-family: var(--font-body);
+    transition: background-color 500ms ease, color 500ms ease;
   }
   h1, h2, h3, h4, h5 {
     font-family: var(--font-display);
@@ -124,6 +130,9 @@
   }
   .glow-gold {
     box-shadow: 0 0 30px hsl(var(--gold) / 0.3), 0 0 60px hsl(var(--gold) / 0.1);
+  }
+  .seasonal-glow {
+    box-shadow: 0 0 32px color-mix(in srgb, var(--seasonal-glow) 46%, transparent);
   }
 }
 

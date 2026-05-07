@@ -7,19 +7,44 @@ import { useProducts } from "@/hooks/useProducts";
 import { usePromotions } from "@/hooks/usePromotions";
 import { useAwards } from "@/hooks/useAwards";
 import { useRegion } from "@/context/RegionContext";
+import { useSiteSettings } from "@/hooks/useSiteSettings";
 
 const Index = () => {
   const { region } = useRegion();
   const { data: products, isLoading } = useProducts();
   const { data: promotions } = usePromotions();
   const { data: awards } = useAwards();
+  const { data: settings } = useSiteSettings();
   const featured = (products ?? []).filter((product) => product.featured).slice(0, 4);
+  const socialLinks = [
+    { label: "Facebook", href: settings?.facebook_url },
+    { label: "X", href: settings?.x_url },
+    { label: "Instagram", href: settings?.instagram_url },
+    { label: "TikTok", href: settings?.tiktok_url },
+  ].filter((item) => item.href);
 
   return (
     <div className="pt-16">
       <section className="relative overflow-hidden border-b border-border bg-secondary">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(212,173,72,0.18),_transparent_45%)]" />
         <div className="container relative mx-auto px-4 py-14">
+          {socialLinks.length > 0 && (
+            <div className="mb-8 flex justify-center md:justify-end">
+              <div className="flex flex-wrap items-center gap-2 rounded-full border border-primary/20 bg-background/70 px-3 py-2 backdrop-blur-sm">
+                {socialLinks.map((item) => (
+                  <a
+                    key={item.label}
+                    href={item.href}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="rounded-full border border-border px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.24em] text-foreground transition-colors hover:border-primary hover:text-primary"
+                  >
+                    {item.label}
+                  </a>
+                ))}
+              </div>
+            </div>
+          )}
           <div className="flex flex-col items-center gap-6 text-center">
             <img
               src="/images/misc/tembo-logo.jpg"

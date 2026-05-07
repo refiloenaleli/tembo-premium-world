@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
-import { Package, Tag, ShoppingCart, LogOut, ArrowLeft, Image, Trophy, Settings, CalendarDays, Mail, Martini } from "lucide-react";
+import { Package, Tag, ShoppingCart, LogOut, ArrowLeft, Image, Trophy, Settings, CalendarDays, Mail, Martini, Sparkles } from "lucide-react";
 import AdminOrders from "@/components/admin/AdminOrders";
 import AdminBanners from "@/components/admin/AdminBanners";
 import AdminAwards from "@/components/admin/AdminAwards";
@@ -11,6 +11,7 @@ import AdminPromotions from "@/components/admin/AdminPromotions";
 import AdminEvents from "@/components/admin/AdminEvents";
 import AdminContactMessages from "@/components/admin/AdminContactMessages";
 import AdminClubHouse from "@/components/admin/AdminClubHouse";
+import AdminSeasonalThemes from "@/components/admin/AdminSeasonalThemes";
 
 const Admin = () => {
   const { user, isAdmin, loading, signOut } = useAuth();
@@ -44,6 +45,7 @@ const Admin = () => {
     { id: "banners", label: "Banners", icon: Image },
     { id: "awards", label: "Awards", icon: Trophy },
     { id: "events", label: "Events", icon: CalendarDays },
+    { id: "themes", label: "Seasonal Themes", icon: Sparkles },
     { id: "settings", label: "Settings", icon: Settings },
   ];
 
@@ -84,6 +86,7 @@ const Admin = () => {
         {tab === "banners" && <AdminBanners />}
         {tab === "awards" && <AdminAwards />}
         {tab === "events" && <AdminEvents />}
+        {tab === "themes" && <AdminSeasonalThemes />}
         {tab === "settings" && <AdminSettings />}
       </div>
     </div>

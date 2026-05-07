@@ -13,6 +13,10 @@ const AdminSettings = () => {
   const [address, setAddress] = useState("");
   const [clubHouseIntro, setClubHouseIntro] = useState("");
   const [clubHouseMapUrl, setClubHouseMapUrl] = useState("");
+  const [facebookUrl, setFacebookUrl] = useState("");
+  const [xUrl, setXUrl] = useState("");
+  const [instagramUrl, setInstagramUrl] = useState("");
+  const [tiktokUrl, setTiktokUrl] = useState("");
   const [shopifyDomain, setShopifyDomain] = useState("");
   const [shopifyVariantMap, setShopifyVariantMap] = useState("{}");
   const [newAdminEmail, setNewAdminEmail] = useState("");
@@ -25,6 +29,10 @@ const AdminSettings = () => {
       setAddress(settings.club_house_address || "");
       setClubHouseIntro(settings.club_house_intro || "");
       setClubHouseMapUrl(settings.club_house_map_url || "");
+      setFacebookUrl(settings.facebook_url || "");
+      setXUrl(settings.x_url || "");
+      setInstagramUrl(settings.instagram_url || "");
+      setTiktokUrl(settings.tiktok_url || "");
       setShopifyDomain(settings.shopify_store_domain || "");
       setShopifyVariantMap(settings.shopify_variant_map || "{}");
     }
@@ -95,6 +103,34 @@ const AdminSettings = () => {
           <div className="flex gap-2">
             <input className="flex-1 bg-secondary border border-border text-foreground rounded px-3 py-2 text-sm" placeholder="https://maps.google.com/..." value={clubHouseMapUrl} onChange={e => setClubHouseMapUrl(e.target.value)} />
             <button onClick={() => saveSetting("club_house_map_url", clubHouseMapUrl)} className="bg-primary text-primary-foreground px-4 py-2 rounded text-sm font-semibold">Save</button>
+          </div>
+        </div>
+        <div>
+          <label className="text-xs text-muted-foreground">Facebook Link</label>
+          <div className="flex gap-2">
+            <input className="flex-1 bg-secondary border border-border text-foreground rounded px-3 py-2 text-sm" placeholder="https://facebook.com/..." value={facebookUrl} onChange={e => setFacebookUrl(e.target.value)} />
+            <button onClick={() => saveSetting("facebook_url", facebookUrl)} className="bg-primary text-primary-foreground px-4 py-2 rounded text-sm font-semibold">Save</button>
+          </div>
+        </div>
+        <div>
+          <label className="text-xs text-muted-foreground">X Link</label>
+          <div className="flex gap-2">
+            <input className="flex-1 bg-secondary border border-border text-foreground rounded px-3 py-2 text-sm" placeholder="https://x.com/..." value={xUrl} onChange={e => setXUrl(e.target.value)} />
+            <button onClick={() => saveSetting("x_url", xUrl)} className="bg-primary text-primary-foreground px-4 py-2 rounded text-sm font-semibold">Save</button>
+          </div>
+        </div>
+        <div>
+          <label className="text-xs text-muted-foreground">Instagram Link</label>
+          <div className="flex gap-2">
+            <input className="flex-1 bg-secondary border border-border text-foreground rounded px-3 py-2 text-sm" placeholder="https://instagram.com/..." value={instagramUrl} onChange={e => setInstagramUrl(e.target.value)} />
+            <button onClick={() => saveSetting("instagram_url", instagramUrl)} className="bg-primary text-primary-foreground px-4 py-2 rounded text-sm font-semibold">Save</button>
+          </div>
+        </div>
+        <div>
+          <label className="text-xs text-muted-foreground">TikTok Link</label>
+          <div className="flex gap-2">
+            <input className="flex-1 bg-secondary border border-border text-foreground rounded px-3 py-2 text-sm" placeholder="https://www.tiktok.com/..." value={tiktokUrl} onChange={e => setTiktokUrl(e.target.value)} />
+            <button onClick={() => saveSetting("tiktok_url", tiktokUrl)} className="bg-primary text-primary-foreground px-4 py-2 rounded text-sm font-semibold">Save</button>
           </div>
         </div>
         <div>

@@ -201,6 +201,10 @@ export const defaultSiteSettings = {
   club_house_address: "94a Sandton Drive, Parkmore, Sandton, Johannesburg",
   club_house_map_url: "https://www.google.com/maps/search/?api=1&query=94a+Sandton+Drive%2C+Parkmore%2C+Sandton%2C+Johannesburg",
   club_house_intro: "Welcome to the Tembo Private Club House, where bold menus and signature cocktails come together for elevated private hosting.",
+  facebook_url: "",
+  x_url: "",
+  instagram_url: "",
+  tiktok_url: "",
   shopify_store_domain: "",
   shopify_variant_map: "{}",
 };

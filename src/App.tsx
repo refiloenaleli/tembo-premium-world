@@ -6,8 +6,10 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { RegionProvider } from "@/context/RegionContext";
 import { CartProvider } from "@/context/CartContext";
 import { AuthProvider } from "@/context/AuthContext";
+import { SeasonalThemeProvider } from "@/context/SeasonalThemeContext";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import SeasonalThemeLayer from "@/components/SeasonalThemeLayer";
 import Index from "./pages/Index";
 import Shop from "./pages/Shop";
 import About from "./pages/About";
@@ -27,30 +29,33 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <AuthProvider>
-        <RegionProvider>
-          <CartProvider>
-            <Toaster />
-            <Sonner />
-            <BrowserRouter>
-              <AgeGate />
-              <Navbar />
-              <Routes>
-                <Route path="/" element={<Index />} />
-                <Route path="/events" element={<Events />} />
-                <Route path="/club-house" element={<ClubHouse />} />
-                <Route path="/shop" element={<Shop />} />
-                <Route path="/about" element={<About />} />
-                <Route path="/contact" element={<Contact />} />
-                <Route path="/cart" element={<Cart />} />
-                <Route path="/auth" element={<Auth />} />
-                <Route path="/admin" element={<Admin />} />
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-              <Footer />
-              <WhatsAppButton />
-            </BrowserRouter>
-          </CartProvider>
-        </RegionProvider>
+        <SeasonalThemeProvider>
+          <RegionProvider>
+            <CartProvider>
+              <Toaster />
+              <Sonner />
+              <BrowserRouter>
+                <SeasonalThemeLayer />
+                <AgeGate />
+                <Navbar />
+                <Routes>
+                  <Route path="/" element={<Index />} />
+                  <Route path="/events" element={<Events />} />
+                  <Route path="/club-house" element={<ClubHouse />} />
+                  <Route path="/shop" element={<Shop />} />
+                  <Route path="/about" element={<About />} />
+                  <Route path="/contact" element={<Contact />} />
+                  <Route path="/cart" element={<Cart />} />
+                  <Route path="/auth" element={<Auth />} />
+                  <Route path="/admin" element={<Admin />} />
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+                <Footer />
+                <WhatsAppButton />
+              </BrowserRouter>
+            </CartProvider>
+          </RegionProvider>
+        </SeasonalThemeProvider>
       </AuthProvider>
     </TooltipProvider>
   </QueryClientProvider>

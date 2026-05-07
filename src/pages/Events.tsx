@@ -8,6 +8,7 @@ const Events = () => {
   const { data: events, isLoading } = useEvents();
   const [subscriberName, setSubscriberName] = useState("");
   const [subscriberEmail, setSubscriberEmail] = useState("");
+  const [subscriberPhone, setSubscriberPhone] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
   const { upcomingEvents, pastEvents } = useMemo(() => {
@@ -44,6 +45,7 @@ const Events = () => {
       body: {
         name: subscriberName.trim(),
         email: subscriberEmail.trim(),
+        phone: subscriberPhone.trim(),
       },
     });
 
@@ -57,6 +59,7 @@ const Events = () => {
     toast.success(data?.message || "You are subscribed");
     setSubscriberName("");
     setSubscriberEmail("");
+    setSubscriberPhone("");
   };
 
   const renderEventCard = (event: NonNullable<typeof events>[number], mode: "upcoming" | "past") => {
@@ -152,6 +155,7 @@ const Events = () => {
             <div className="space-y-3">
               <input className="w-full rounded-md border border-border bg-secondary px-4 py-3 text-sm text-foreground" placeholder="Your name" value={subscriberName} onChange={(e) => setSubscriberName(e.target.value)} />
               <input type="email" className="w-full rounded-md border border-border bg-secondary px-4 py-3 text-sm text-foreground" placeholder="Email address" value={subscriberEmail} onChange={(e) => setSubscriberEmail(e.target.value)} />
+              <input className="w-full rounded-md border border-border bg-secondary px-4 py-3 text-sm text-foreground" placeholder="Contact number" value={subscriberPhone} onChange={(e) => setSubscriberPhone(e.target.value)} />
               <button disabled={submitting} className="w-full rounded-md bg-primary px-5 py-3 text-sm font-semibold uppercase tracking-[0.2em] text-primary-foreground disabled:cursor-not-allowed disabled:opacity-70">
                 {submitting ? "Subscribing..." : "Subscribe"}
               </button>

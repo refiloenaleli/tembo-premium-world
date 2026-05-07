@@ -447,6 +447,7 @@ const AdminEvents = () => {
               <div>
                 <p className="text-sm font-semibold text-foreground">{subscriber.name || "Subscriber"}</p>
                 <p className="text-sm text-muted-foreground">{subscriber.email}</p>
+                {subscriber.phone && <p className="text-sm text-muted-foreground">{subscriber.phone}</p>}
               </div>
               <div className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
                 {subscriber.last_notified_at ? `Last notified ${new Date(subscriber.last_notified_at).toLocaleDateString()}` : "Not notified yet"}

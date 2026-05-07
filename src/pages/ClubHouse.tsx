@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
-import { Star } from "lucide-react";
+import { ArrowDown, Download, ExternalLink, QrCode, Star } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/context/AuthContext";
@@ -152,6 +152,9 @@ const ClubHouse = () => {
   const cocktails = catalog?.cocktails ?? [];
   const menus = catalog?.menus ?? [];
 
+  const buildMenuQrUrl = (menuUrl: string) =>
+    `https://api.qrserver.com/v1/create-qr-code/?size=240x240&data=${encodeURIComponent(menuUrl)}`;
+
   return (
     <div className="min-h-screen bg-background pt-16">
       <section className="border-b border-border bg-[radial-gradient(circle_at_top,_hsl(var(--primary)/0.16),_transparent_45%),linear-gradient(180deg,_hsl(var(--background)),_hsl(var(--secondary)/0.35))]">
@@ -170,6 +173,24 @@ const ClubHouse = () => {
                   <span className="flex items-center gap-1">{renderStars(Math.round(Number(averageRating)))}</span>
                   <span>{averageRating}/5 guest rating</span>
                 </span>
+              )}
+            </div>
+            <div className="flex flex-wrap gap-3">
+              <a
+                href="#clubhouse-menus"
+                className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-background/70 px-5 py-3 text-sm font-semibold text-foreground transition-colors hover:border-primary hover:bg-primary/10"
+              >
+                View Menu <ArrowDown size={16} />
+              </a>
+              {settings?.club_house_map_url && (
+                <a
+                  href={settings.club_house_map_url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-5 py-3 text-sm font-semibold text-foreground transition-colors hover:border-primary"
+                >
+                  Open Map <ExternalLink size={16} />
+                </a>
               )}
             </div>
           </div>
@@ -235,7 +256,7 @@ const ClubHouse = () => {
         )}
       </section>
 
-      <section className="container mx-auto px-4 py-4 pb-12">
+      <section id="clubhouse-menus" className="container mx-auto scroll-mt-28 px-4 py-4 pb-12">
         <div className="mb-8">
           <p className="text-sm uppercase tracking-[0.3em] text-primary">Menus</p>
           <h2 className="font-display text-3xl text-foreground">Curated private menus</h2>
@@ -250,10 +271,65 @@ const ClubHouse = () => {
                     <h3 className="mt-3 font-display text-3xl leading-tight text-primary sm:text-4xl">{menu.title}</h3>
                   </div>
                 </div>
-                <div className="space-y-3 p-5">
+                <div className="space-y-5 p-5">
                   <p className="whitespace-pre-line text-sm leading-6 text-muted-foreground">
                     {menu.description || "Description coming soon."}
                   </p>
+                  {menu.image_url ? (
+                    <div className="grid gap-5 rounded-2xl border border-border bg-secondary/20 p-4 md:grid-cols-[1.2fr_0.8fr]">
+                      <a
+                        href={menu.image_url}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="overflow-hidden rounded-2xl border border-primary/15 bg-background"
+                      >
+                        <img
+                          src={menu.image_url}
+                          alt={`${menu.title} menu`}
+                          className="h-full max-h-[30rem] w-full object-cover"
+                          loading="lazy"
+                        />
+                      </a>
+                      <div className="flex flex-col justify-between gap-4">
+                        <div className="rounded-2xl border border-primary/15 bg-background p-4 text-center">
+                          <div className="mb-3 inline-flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary">
+                            <QrCode size={18} />
+                          </div>
+                          <p className="text-sm font-semibold text-foreground">Scan to download the menu</p>
+                          <p className="mt-2 text-xs leading-5 text-muted-foreground">
+                            The QR code always points to the current menu image saved by the admin.
+                          </p>
+                          <img
+                            src={buildMenuQrUrl(menu.image_url)}
+                            alt={`QR code for ${menu.title}`}
+                            className="mx-auto mt-4 h-40 w-40 rounded-2xl border border-border bg-white p-2"
+                            loading="lazy"
+                          />
+                        </div>
+                        <div className="flex flex-wrap gap-3">
+                          <a
+                            href={menu.image_url}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="inline-flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground"
+                          >
+                            Open Menu <ExternalLink size={16} />
+                          </a>
+                          <a
+                            href={menu.image_url}
+                            download
+                            className="inline-flex items-center gap-2 rounded-full border border-border px-4 py-2 text-sm font-semibold text-foreground transition-colors hover:border-primary"
+                          >
+                            Download Menu <Download size={16} />
+                          </a>
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="rounded-2xl border border-dashed border-border p-4 text-sm text-muted-foreground">
+                      Add a menu image in admin to show the downloadable QR code here.
+                    </div>
+                  )}
                 </div>
               </article>
             ))}

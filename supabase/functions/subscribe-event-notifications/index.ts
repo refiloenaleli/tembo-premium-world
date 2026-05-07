@@ -19,9 +19,10 @@ serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
     );
 
-    const { email, name } = await req.json();
+    const { email, name, phone } = await req.json();
     const normalizedEmail = String(email || "").trim().toLowerCase();
     const safeName = String(name || "").trim();
+    const safePhone = String(phone || "").trim();
 
     if (!normalizedEmail) {
       throw new Error("Email address is required");
@@ -37,6 +38,7 @@ serve(async (req) => {
         {
           email: normalizedEmail,
           name: safeName || null,
+          phone: safePhone || null,
           active: true,
           subscribed_at: new Date().toISOString(),
         },

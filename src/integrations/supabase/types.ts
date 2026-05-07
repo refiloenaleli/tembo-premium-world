@@ -236,6 +236,7 @@ export type Database = {
           id: string
           last_notified_at: string | null
           name: string | null
+          phone: string | null
           subscribed_at: string
           updated_at: string
         }
@@ -245,6 +246,7 @@ export type Database = {
           id?: string
           last_notified_at?: string | null
           name?: string | null
+          phone?: string | null
           subscribed_at?: string
           updated_at?: string
         }
@@ -254,6 +256,7 @@ export type Database = {
           id?: string
           last_notified_at?: string | null
           name?: string | null
+          phone?: string | null
           subscribed_at?: string
           updated_at?: string
         }
@@ -484,6 +487,47 @@ export type Database = {
         }
         Relationships: []
       }
+      product_gallery_assets: {
+        Row: {
+          caption: string | null
+          cocktail_name: string
+          created_at: string
+          id: string
+          image_url: string
+          product_id: string
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          caption?: string | null
+          cocktail_name: string
+          created_at?: string
+          id?: string
+          image_url: string
+          product_id: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          caption?: string | null
+          cocktail_name?: string
+          created_at?: string
+          id?: string
+          image_url?: string
+          product_id?: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_gallery_assets_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           created_at: string
@@ -550,6 +594,84 @@ export type Database = {
           starts_at?: string | null
           title?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      seasonal_themes: {
+        Row: {
+          accent_color: string
+          active: boolean
+          ambient_audio_url: string | null
+          background_gradient: string
+          banner_image_url: string | null
+          country_code: string | null
+          created_at: string
+          description: string | null
+          end_date: string | null
+          flag_overlay_url: string | null
+          glow_color: string
+          id: string
+          manual_override: boolean
+          name: string
+          overlay_image_url: string | null
+          overlay_opacity: number
+          particle_style: string
+          promo_message: string | null
+          slug: string
+          sort_order: number
+          start_date: string | null
+          updated_at: string
+          video_url: string | null
+        }
+        Insert: {
+          accent_color?: string
+          active?: boolean
+          ambient_audio_url?: string | null
+          background_gradient?: string
+          banner_image_url?: string | null
+          country_code?: string | null
+          created_at?: string
+          description?: string | null
+          end_date?: string | null
+          flag_overlay_url?: string | null
+          glow_color?: string
+          id?: string
+          manual_override?: boolean
+          name: string
+          overlay_image_url?: string | null
+          overlay_opacity?: number
+          particle_style?: string
+          promo_message?: string | null
+          slug: string
+          sort_order?: number
+          start_date?: string | null
+          updated_at?: string
+          video_url?: string | null
+        }
+        Update: {
+          accent_color?: string
+          active?: boolean
+          ambient_audio_url?: string | null
+          background_gradient?: string
+          banner_image_url?: string | null
+          country_code?: string | null
+          created_at?: string
+          description?: string | null
+          end_date?: string | null
+          flag_overlay_url?: string | null
+          glow_color?: string
+          id?: string
+          manual_override?: boolean
+          name?: string
+          overlay_image_url?: string | null
+          overlay_opacity?: number
+          particle_style?: string
+          promo_message?: string | null
+          slug?: string
+          sort_order?: number
+          start_date?: string | null
+          updated_at?: string
+          video_url?: string | null
         }
         Relationships: []
       }
