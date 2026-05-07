@@ -73,7 +73,7 @@ const storySlides: StorySlide[] = [
   {
     id: "tembo",
     eyebrow: "Tembo",
-    title: "Tembo — strength, memory, legacy",
+    title: "Tembo - strength, memory, legacy",
     text: "The elephant is not decoration. It is presence, dignity, and lasting memory translated into a premium African identity that moves with confidence.",
     imageSrc: aboutImageTembo,
     mood: "Powerful, sculptural, calm",
@@ -258,7 +258,7 @@ const AboutExperience = () => {
   return (
     <div className="min-h-screen bg-background pt-16">
       <section
-        className="relative isolate overflow-hidden"
+        className="relative isolate overflow-hidden border-b border-white/10 bg-[#050505]"
         onMouseMove={(event) => {
           if (reducedMotion) return;
           const bounds = event.currentTarget.getBoundingClientRect();
@@ -290,6 +290,14 @@ const AboutExperience = () => {
         />
 
         <div className="relative min-h-[calc(100vh-4rem)]">
+          <div className="pointer-events-none absolute inset-x-0 top-0 z-10 mx-auto hidden max-w-7xl px-4 pt-6 sm:px-6 lg:block lg:px-8">
+            <div className="max-w-xl rounded-[1.75rem] border border-white/10 bg-black/30 px-6 py-4 text-white/72 shadow-[0_20px_80px_rgba(0,0,0,0.28)] backdrop-blur-2xl">
+              <p className="text-[11px] uppercase tracking-[0.36em] text-[#D4AF37]">About Tembo Premium</p>
+              <p className="mt-2 text-sm leading-7">
+                A cinematic African luxury story told in six moving chapters, designed to feel calm, immersive, and unmistakably premium.
+              </p>
+            </div>
+          </div>
           <AnimatePresence mode="wait">
             <motion.div
               key={activeSlide.id}
@@ -351,7 +359,7 @@ const AboutExperience = () => {
                       className="inline-flex rounded-full border border-white/15 px-4 py-2 text-xs uppercase tracking-[0.32em] backdrop-blur-xl"
                       style={{ color: activeSlide.accent, background: activeSlide.panelTone }}
                     >
-                      {activeSlide.eyebrow}
+                      {activeSlide.eyebrow} / {activeIndex + 1} of {storySlides.length}
                     </div>
                     <div
                       className="mt-6 max-w-3xl rounded-[2rem] border border-white/12 p-6 shadow-[0_24px_90px_rgba(0,0,0,0.30)] backdrop-blur-2xl sm:p-8"
@@ -363,6 +371,11 @@ const AboutExperience = () => {
                       <p className="mt-5 max-w-xl text-base leading-8 text-white/78 sm:text-lg">
                         {activeSlide.text}
                       </p>
+                      <div className="mt-6 flex flex-wrap gap-3 text-[11px] uppercase tracking-[0.24em] text-white/70">
+                        <span className="rounded-full border border-white/12 bg-white/5 px-3 py-2">Luxury African Identity</span>
+                        <span className="rounded-full border border-white/12 bg-white/5 px-3 py-2">Cinematic Storytelling</span>
+                        <span className="rounded-full border border-white/12 bg-white/5 px-3 py-2">Modern Heritage</span>
+                      </div>
                     </div>
                   </motion.div>
                 </AnimatePresence>
@@ -432,6 +445,9 @@ const AboutExperience = () => {
                   />
                 ))}
               </div>
+              <p className="text-xs uppercase tracking-[0.28em] text-white/55">
+                Swipe on mobile or use the arrows to move through the story.
+              </p>
             </div>
           </div>
         </div>

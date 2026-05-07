@@ -1,5 +1,5 @@
-import { useMemo, useState } from "react";
-import { ShoppingBag, X } from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { ChevronLeft, ChevronRight, ShoppingBag, X } from "lucide-react";
 import { toast } from "sonner";
 import { useProducts, type DbProduct } from "@/hooks/useProducts";
 import { useProductGallery, type ProductGalleryAsset } from "@/hooks/useProductGallery";
@@ -83,10 +83,12 @@ const Shop = () => {
   const [category, setCategory] = useState("all");
   const [search, setSearch] = useState("");
   const [selectedProduct, setSelectedProduct] = useState<DbProduct | null>(null);
+  const [selectedGalleryIndex, setSelectedGalleryIndex] = useState(0);
   const { data: products, isLoading } = useProducts();
   const { data: galleryAssets } = useProductGallery();
   const { addItem } = useCart();
   const { formatPrice } = useRegion();
+  const galleryScrollRef = useRef<HTMLDivElement | null>(null);
 
   const categories = ["all", "gin", "fusion", "brandy", "vodka", "whisky"];
 
@@ -133,6 +135,20 @@ const Shop = () => {
   };
 
   const selectedGallery = selectedProduct ? getGalleryItems(selectedProduct) : [];
+
+  useEffect(() => {
+    setSelectedGalleryIndex(0);
+    galleryScrollRef.current?.scrollTo({ left: 0, behavior: "auto" });
+  }, [selectedProduct]);
+
+  const scrollGalleryBy = (direction: "prev" | "next") => {
+    const container = galleryScrollRef.current;
+    if (!container) return;
+    const card = container.querySelector<HTMLElement>("[data-gallery-card='true']");
+    const cardWidth = card?.offsetWidth ?? container.clientWidth * 0.82;
+    const delta = direction === "next" ? cardWidth + 16 : -(cardWidth + 16);
+    container.scrollBy({ left: delta, behavior: "smooth" });
+  };
 
   return (
     <div className="pt-16">
@@ -251,7 +267,7 @@ const Shop = () => {
       <Dialog open={Boolean(selectedProduct)} onOpenChange={(open) => !open && setSelectedProduct(null)}>
         <DialogContent className="max-h-[90vh] max-w-6xl overflow-hidden border-border bg-background p-0">
           {selectedProduct && (
-            <div className="grid max-h-[90vh] overflow-y-auto lg:grid-cols-[0.95fr_1.05fr]">
+            <div className="grid max-h-[90vh] overflow-y-auto lg:grid-cols-[0.9fr_1.1fr]">
               <div className="sticky top-0 flex min-h-[24rem] items-center justify-center bg-[radial-gradient(circle_at_top,_rgba(212,173,72,0.18),_transparent_45%),linear-gradient(180deg,_rgba(17,17,17,0.95),_rgba(17,17,17,0.88))] p-8">
                 <button
                   type="button"
@@ -263,7 +279,7 @@ const Shop = () => {
                 <img
                   src={selectedProduct.image_url || "/placeholder.svg"}
                   alt={selectedProduct.name}
-                  className="max-h-[70vh] w-full object-contain"
+                  className="max-h-[72vh] w-full object-contain"
                 />
               </div>
 
@@ -294,29 +310,96 @@ const Shop = () => {
                 </div>
 
                 <div className="space-y-4">
-                  <div>
-                    <p className="text-xs uppercase tracking-[0.3em] text-primary">Cocktails & Serves</p>
-                    <h3 className="mt-2 font-display text-2xl text-foreground">Scroll through drinks made with this bottle</h3>
+                  <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+                    <div>
+                      <p className="text-xs uppercase tracking-[0.3em] text-primary">Cocktails & Serves</p>
+                      <h3 className="mt-2 font-display text-2xl text-foreground">Scroll sideways to explore what this bottle becomes</h3>
+                    </div>
+                    {selectedGallery.length > 1 && (
+                      <div className="flex items-center gap-2 self-start sm:self-auto">
+                        <button
+                          type="button"
+                          onClick={() => scrollGalleryBy("prev")}
+                          className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-border bg-secondary text-foreground transition-colors hover:border-primary"
+                          aria-label="Previous gallery image"
+                        >
+                          <ChevronLeft size={18} />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => scrollGalleryBy("next")}
+                          className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-border bg-secondary text-foreground transition-colors hover:border-primary"
+                          aria-label="Next gallery image"
+                        >
+                          <ChevronRight size={18} />
+                        </button>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="rounded-2xl border border-primary/15 bg-primary/5 px-4 py-3 text-xs uppercase tracking-[0.24em] text-muted-foreground">
+                    Swipe or scroll horizontally to see cocktail photos and extra bottle visuals.
                   </div>
 
                   {selectedGallery.length > 0 ? (
                     <div className="space-y-4">
-                      {selectedGallery.map((asset) => (
-                        <article key={asset.id} className="overflow-hidden rounded-2xl border border-border bg-card">
-                          <img
-                            src={asset.image_url}
-                            alt={asset.cocktail_name}
-                            loading="lazy"
-                            className="h-72 w-full object-cover"
-                          />
-                          <div className="space-y-2 p-5">
-                            <h4 className="font-display text-2xl text-foreground">{asset.cocktail_name}</h4>
-                            <p className="text-sm leading-6 text-muted-foreground">
-                              {asset.caption || "Signature Tembo serve."}
-                            </p>
-                          </div>
-                        </article>
-                      ))}
+                      <div
+                        ref={galleryScrollRef}
+                        onScroll={(event) => {
+                          const container = event.currentTarget;
+                          const card = container.querySelector<HTMLElement>("[data-gallery-card='true']");
+                          const cardWidth = card?.offsetWidth ?? container.clientWidth;
+                          const nextIndex = Math.round(container.scrollLeft / (cardWidth + 16));
+                          setSelectedGalleryIndex(Math.max(0, Math.min(selectedGallery.length - 1, nextIndex)));
+                        }}
+                        className="flex snap-x snap-mandatory gap-4 overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+                      >
+                        {selectedGallery.map((asset, index) => (
+                          <article
+                            key={asset.id}
+                            data-gallery-card="true"
+                            className="min-w-[82%] snap-center overflow-hidden rounded-[1.75rem] border border-border bg-card sm:min-w-[68%]"
+                          >
+                            <img
+                              src={asset.image_url}
+                              alt={asset.cocktail_name}
+                              loading="lazy"
+                              className="h-72 w-full object-cover"
+                            />
+                            <div className="space-y-2 p-5">
+                              <p className="text-[11px] uppercase tracking-[0.28em] text-primary">Gallery {index + 1}</p>
+                              <h4 className="font-display text-2xl text-foreground">{asset.cocktail_name}</h4>
+                              <p className="text-sm leading-6 text-muted-foreground">
+                                {asset.caption || "Signature Tembo serve."}
+                              </p>
+                            </div>
+                          </article>
+                        ))}
+                      </div>
+
+                      <div className="flex items-center justify-between gap-4">
+                        <div className="flex items-center gap-2">
+                          {selectedGallery.map((asset, index) => (
+                            <button
+                              key={asset.id}
+                              type="button"
+                              onClick={() => {
+                                const container = galleryScrollRef.current;
+                                const card = container?.querySelector<HTMLElement>("[data-gallery-card='true']");
+                                if (!container || !card) return;
+                                container.scrollTo({ left: index * (card.offsetWidth + 16), behavior: "smooth" });
+                              }}
+                              aria-label={`View gallery image ${index + 1}`}
+                              className={`h-2.5 rounded-full transition-all duration-300 ${
+                                index === selectedGalleryIndex ? "w-10 bg-primary" : "w-2.5 bg-border hover:bg-primary/60"
+                              }`}
+                            />
+                          ))}
+                        </div>
+                        <p className="text-xs uppercase tracking-[0.24em] text-muted-foreground">
+                          {selectedGalleryIndex + 1} / {selectedGallery.length}
+                        </p>
+                      </div>
                     </div>
                   ) : (
                     <div className="rounded-2xl border border-dashed border-border p-6 text-sm text-muted-foreground">

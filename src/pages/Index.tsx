@@ -9,6 +9,18 @@ import { useAwards } from "@/hooks/useAwards";
 import { useRegion } from "@/context/RegionContext";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 
+const XIcon = ({ className = "h-4 w-4" }: { className?: string }) => (
+  <svg viewBox="0 0 24 24" aria-hidden="true" className={className} fill="currentColor">
+    <path d="M18.244 2H21l-6.522 7.455L22.15 22h-6.004l-4.702-6.146L6.065 22H3.307l6.976-7.972L1.85 2h6.157l4.25 5.61L18.244 2Zm-1.053 18h1.527L7.177 3.895H5.54L17.19 20Z" />
+  </svg>
+);
+
+const TikTokIcon = ({ className = "h-4 w-4" }: { className?: string }) => (
+  <svg viewBox="0 0 24 24" aria-hidden="true" className={className} fill="currentColor">
+    <path d="M14.01 2c.232 1.964 1.33 3.94 3.13 5.066A7.42 7.42 0 0 0 21 8.166v3.09a10.32 10.32 0 0 1-3.88-.79v5.8c0 3.837-3.16 6.734-6.856 6.734-3.543 0-6.264-2.72-6.264-6.214 0-3.672 2.938-6.314 6.585-6.314.417 0 .758.03 1.099.106v3.18a3.22 3.22 0 0 0-1.099-.19c-1.875 0-3.278 1.345-3.278 3.187 0 1.753 1.31 3.123 3.145 3.123 2.08 0 3.256-1.632 3.256-3.857V2h3.302Z" />
+  </svg>
+);
+
 const Index = () => {
   const { region } = useRegion();
   const { data: products, isLoading } = useProducts();
@@ -18,9 +30,9 @@ const Index = () => {
   const featured = (products ?? []).filter((product) => product.featured).slice(0, 4);
   const socialLinks = [
     { label: "Facebook", href: settings?.facebook_url, icon: Facebook },
-    { label: "X", href: settings?.x_url, icon: null },
+    { label: "X", href: settings?.x_url, icon: XIcon },
     { label: "Instagram", href: settings?.instagram_url, icon: Instagram },
-    { label: "TikTok", href: settings?.tiktok_url, icon: null },
+    { label: "TikTok", href: settings?.tiktok_url, icon: TikTokIcon },
   ];
 
   return (
@@ -39,18 +51,20 @@ const Index = () => {
                     href={item.href}
                     target="_blank"
                     rel="noreferrer"
-                    className="inline-flex items-center gap-2 rounded-full border border-border px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.24em] text-foreground transition-colors hover:border-primary hover:text-primary"
+                    aria-label={item.label}
+                    title={item.label}
+                    className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-border text-foreground transition-colors hover:border-primary hover:text-primary"
                   >
-                    {Icon ? <Icon size={13} /> : <span className="text-[12px] font-bold">{item.label === "X" ? "X" : "T"}</span>}
-                    {item.label}
+                    <Icon />
                   </a>
                 ) : (
                   <span
                     key={item.label}
-                    className="inline-flex items-center gap-2 rounded-full border border-border/60 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.24em] text-muted-foreground"
+                    aria-label={item.label}
+                    title={`${item.label} link not added yet`}
+                    className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-border/60 text-muted-foreground"
                   >
-                    {Icon ? <Icon size={13} /> : <span className="text-[12px] font-bold">{item.label === "X" ? "X" : "T"}</span>}
-                    {item.label}
+                    <Icon />
                   </span>
                 );
               })}
